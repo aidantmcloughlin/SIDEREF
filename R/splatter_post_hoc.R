@@ -26,8 +26,9 @@ for(f in splat_out_files) {
 
 ### Note: this is manually created dependent on the experiment format:
 
-splatter_subgroup_map <-
-  data.frame(SubGroup = levels(meta_data$SubGroup)) %>% 
+splatter_global_group_map <-
+  data.frame(Global_Group = c("Group1", "Group2",
+                              "Global_Group" %p% 1:6)) %>% 
   mutate(cell_group_high = row_number()) %>% 
   mutate(global_group_label = c(
     "A [1] High Ind. D.E. Prob",
@@ -35,10 +36,11 @@ splatter_subgroup_map <-
     "C [3,4,5] High Ind. D.E., Low Shared D.E.",
     "D [6,7,8] High Ind. D.E., High Shared D.E.",
     "E [9,10,11] Low Ind D.E., High Shared D.E.",
-    "F [12, 13, 14] Low Ind D.E., Low Shared D.E.",
-    "G [15, 16, 17] Low Ind D.E., Low Shared D.E., High D.E. Variance",
-    "H [18, 19, 20] High Ind D.E., Low Shared D.E., High D.E. Variance"
+    "F [12,13,14] Low Ind D.E., Low Shared D.E.",
+    "G [15,16,17] Low Ind D.E., Low Shared D.E., High D.E. Variance",
+    "H [18,19,20] High Ind D.E., Low Shared D.E., High D.E. Variance"
   )) %>% 
+  
   mutate(hm_global_group_label = c(
     "A", "B", "C", "D", 
     "E", "F", "G", "H"
@@ -50,21 +52,21 @@ meta_data <-
   mutate(cell_group_low = gsub("Group", "", 
                                as.character(meta_data$Group)) %>% 
            as.numeric()) %>% 
-  left_join(splatter_subgroup_map)
+  left_join(splatter_global_group_map)
 
 group_labels <- as.character(meta_data$cell_group_low)
 
 
-group_subgroup_map <- 
+group_global_group_map <- 
   meta_data %>%
   dplyr::distinct(cell_group_low, cell_group_high) %>% 
-  left_join(splatter_subgroup_map)
+  left_join(splatter_global_group_map)
 
 X_SIZE = 11
 Y_SIZE = 12
 LEGEND_SIZE = 8
 LEGEND_TEXT_SIZE = 8
-TITLE_SIZE = 14
+TITLE_SIZE = 9.5
 
 SYMMETRIZE = FALSE
 
@@ -73,12 +75,12 @@ SYMMETRIZE = FALSE
 
 p1 <- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = output$dist_list$side_ref_g300_dist,
+  dist_mat = main_dist_output$dist_list$side_ref_g300_dist,
   title = "(a) SIDEREF",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) +
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -91,12 +93,12 @@ p1 <- groupwiseDistanceHeatmap(
 
 p2 <- groupwiseDistanceHeatmap(
   group_labels = group_labels,
-  dist_mat = output$dist_list$pca_wtd25_dist,
+  dist_mat = main_dist_output$dist_list$pca_wtd25_dist,
   title = "(b) PCA (25 Dims.)",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -113,7 +115,7 @@ p3 <- groupwiseDistanceHeatmap(
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -130,7 +132,7 @@ p4 <- groupwiseDistanceHeatmap(
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -147,7 +149,7 @@ p5 <- groupwiseDistanceHeatmap(
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -164,7 +166,7 @@ p6 <- groupwiseDistanceHeatmap(
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -176,12 +178,12 @@ p6 <- groupwiseDistanceHeatmap(
 
 p7 <- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = output$dist_list$euclid_dist,
+  dist_mat = main_dist_output$dist_list$euclid_dist,
   title = "(b) Euclidean",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -192,12 +194,12 @@ p7 <- groupwiseDistanceHeatmap(
 
 p8 <- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = output$dist_list$pear_dist,
+  dist_mat = main_dist_output$dist_list$pear_dist,
   title = "(c) 1 - |Pearson Correlation|",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -208,12 +210,12 @@ p8 <- groupwiseDistanceHeatmap(
 
 p9 <- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = output$dist_list$spearman_dist,
+  dist_mat = main_dist_output$dist_list$spearman_dist,
   title = "(d) 1 - |Spearman Correlation|",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -227,12 +229,12 @@ p9 <- groupwiseDistanceHeatmap(
  
 p10 <- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = othr_dist_output$RAFSIL,
+  dist_mat = othr_dist_output$dist_list$RAFSIL,
   title = "(b) RAFSIL",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -243,12 +245,12 @@ p10 <- groupwiseDistanceHeatmap(
 
 p11 <- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = othr_dist_output$SIMLR_5_dims,
+  dist_mat = othr_dist_output$dist_list$SIMLR_5_dims,
   title = "(c) SIMLR (5 Connected Components)",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -259,12 +261,12 @@ p11 <- groupwiseDistanceHeatmap(
 
 p12<- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = othr_dist_output$SIMLR_10_dims,
+  dist_mat = othr_dist_output$dist_list$SIMLR_10_dims,
   title = "(d) SIMLR (10 Connected Components)",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -275,12 +277,12 @@ p12<- groupwiseDistanceHeatmap(
 
 p13<- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
-  dist_mat = othr_dist_output$SIMLR_25_dims,
+  dist_mat = othr_dist_output$dist_list$SIMLR_25_dims,
   title = "(e) SIMLR (25 Connected Components)",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
-  global_group_label_df = group_subgroup_map) + 
+  global_group_label_df = group_global_group_map) + 
   theme(axis.text.x = element_text(size=X_SIZE),
         axis.text.y = element_text(size=Y_SIZE),
         title = element_text(size=TITLE_SIZE),
@@ -302,71 +304,70 @@ splat_fig2 <-
             common.legend = TRUE, legend="right")
 
 splat_fig3 <-
-  ggarrange(p1, p10, p11, p12,p13, nrow = 2, ncol = 3,
+  ggarrange(p1, p10, p11, nrow = 1, ncol = 3,
+            common.legend = TRUE, legend="right")
+
+splat_figss6 <-
+  ggarrange(p12, p13, nrow = 1, ncol = 2,
             common.legend = TRUE, legend="right")
 
 
 ### save =========================================
 ggsave(here("manuscript_files//Figure1.png"),
        plot = splat_fig1,
-       width = 14, height = 15,
+       width = 13, height = 15,
        device='png', dpi=400)
 
 ggsave(here("manuscript_files/Figure2.png"),
        plot = splat_fig2,
-       width = 14, height = 10,
+       width = 13, height = 10,
        device='png', dpi=400)
 
 
 ggsave(here("manuscript_files/Figure3.png"),
        plot = splat_fig3,
-       width = 14, height = 7,
+       width = 23.5, height = 7,
+       device='png', dpi=400)
+
+ggsave(here("manuscript_files/FigureS6.png"),
+       plot = splat_figss6,
+       width = 16.5, height = 7,
        device='png', dpi=400)
 
 
 
 ### A few UMAP examples ===============================================
 
-p_umap_sideref_spectral25 <-
-  data.frame(spectral_dist_res$umap_list$side_ref_g300_dist_spectral_d25_dist) %>% 
-  mutate(global_group = meta_data$global_group_label) %>% 
-  ggplot() + 
-  geom_point(aes(x=X1, y=X2, colour=global_group),
-             size = 0.5) + 
-  theme_bw() + 
-  labs(x = "UMAP1", y = "UMAP2", colour = "Global Group") + 
-  ggtitle("(a) SIDEREF Spectral (25 Dims.)")
 
 p_umap_sideref <-
-  data.frame(output$umap_list$side_ref_g300_umap) %>% 
+  data.frame(main_dist_output$umap_list$side_ref_g300_umap) %>% 
   mutate(global_group = meta_data$global_group_label) %>% 
   ggplot() + 
   geom_point(aes(x=X1, y=X2, colour=global_group),
              size = 0.5) + 
   theme_bw() + 
   labs(x = "UMAP1", y = "UMAP2", colour = "Global Group") + 
-  ggtitle("(b) SIDEREF")
+  ggtitle("(a) SIDEREF")
 
 p_umap_pca25 <-
-  data.frame(output$umap_list$pca_wtd25_umap) %>% 
+  data.frame(main_dist_output$umap_list$pca_wtd25_umap) %>% 
   mutate(global_group = meta_data$global_group_label) %>% 
   ggplot() + 
   geom_point(aes(x=X1, y=X2, colour=global_group),
              size = 0.5) + 
   theme_bw() + 
   labs(x = "UMAP1", y = "UMAP2", colour = "Global Group") +
-  ggtitle("(c) PCA (25 Dims.)")
+  ggtitle("(b) PCA (25 Dims.)")
 
 splat_umap_fig <-
-  ggarrange(p_umap_sideref_spectral25, 
-            p_umap_sideref, 
-            p_umap_pca25, ncol=3, nrow=1, 
+  ggarrange(p_umap_sideref, 
+            p_umap_pca25, ncol=2, nrow=1, 
             common.legend = TRUE, legend="bottom") 
 
 
 ggsave(here("manuscript_files/FigureS5.eps"),
        plot = splat_umap_fig,
-       width =13, height = 5,
+       width =14, height = 7,
        device='eps', dpi=300)
 
 
@@ -374,12 +375,12 @@ ggsave(here("manuscript_files/FigureS5.eps"),
 
 ### SIMLR UMAP ===============================================
 
-simlr_umap <- 
-  uwot::umap(as.dist(othr_dist_output$SIMLR_10_dims))
-
-ggplot(data.frame(simlr_umap) %>% 
-         mutate(cell_type = as.character(meta_data$cell_group_high))) + 
-  geom_point(aes(x=X1,y=X2,colour=cell_type))
+# simlr_umap <- 
+#   uwot::umap(as.dist(othr_dist_output$SIMLR_10_dims))
+# 
+# ggplot(data.frame(simlr_umap) %>% 
+#          mutate(cell_type = as.character(meta_data$cell_group_high))) + 
+#   geom_point(aes(x=X1,y=X2,colour=cell_type))
 
 
 

@@ -136,7 +136,7 @@ splatSimGroupDEAlt <- function(sim, params,
     rowData(sim)[[paste0("DEFacGroup", idx)]] <- de.facs
   }
   
-  ### assign shared DE genes btw subgroups
+  ### assign shared DE genes btw global groups
   for(i in seq_len(length(group_share_list))) {
     shared_groups <- group_share_list[[i]]
     de_cols <- which(names(rowData(sim)) %in% paste0("DEFacGroup", shared_groups))

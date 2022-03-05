@@ -138,7 +138,7 @@ TabMurisDistResPipeline <-
       save_loc = save_loc)
     
     
-    return(list(main_dist_res = dist_res$output, 
+    return(list(main_dist_res = dist_res$main_dist_output, 
                 other_dist_res = dist_res$othr_dist_output,
                 spectral_dist_res = spectral_dist_res))
     
@@ -198,15 +198,15 @@ splatDistResPipeline <-
     ###  Appending Spectral Results 
     print("Spectral distance computation")
     ## We run on SIDEREF and PCA (weighted)
-    spectral_dist_res <- dist_res$output
+    spectral_dist_res <- dist_res$main_dist_output
     
     spectral_dist_names <-
-      names(dist_res$output$dist_list)[
-        grepl("pca_wtd|side", names(dist_res$output$dist_list))]
+      names(dist_res$main_dist_output$dist_list)[
+        grepl("pca_wtd|side", names(dist_res$main_dist_output$dist_list))]
     
     spectral_umap_names <-
-      names(dist_res$output$umap_list)[
-        grepl("pca_wtd|side", names(dist_res$output$umap_list))]
+      names(dist_res$main_dist_output$umap_list)[
+        grepl("pca_wtd|side", names(dist_res$main_dist_output$umap_list))]
     
     spectral_dist_res$dist_list <- 
       spectral_dist_res$dist_list[spectral_dist_names]
@@ -219,7 +219,7 @@ splatDistResPipeline <-
       do_spectral_pca = do_spectral_pca,
       save_loc = save_loc)
     
-    return(list(main_dist_res = dist_res$output, 
+    return(list(main_dist_res = dist_res$main_dist_output, 
                 other_dist_res = dist_res$othr_dist_output,
                 spectral_dist_res = spectral_dist_res))
     

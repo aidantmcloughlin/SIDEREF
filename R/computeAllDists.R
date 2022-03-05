@@ -181,7 +181,7 @@ computeAllDists <- function(counts, group_labels,
   names_dist <- names_core %p% "_dist"
   names_umap <- names_core %p% "_umap"
   
-  output <-
+  main_dist_output <-
     list(
       dist_list = append(side_ref_dist, 
                          append(pca_dist,
@@ -196,25 +196,26 @@ computeAllDists <- function(counts, group_labels,
                                             pear_umap,
                                             spearman_umap))))
     )
-  names(output$dist_list) = names_dist 
-  names(output$umap_list) = names_umap 
+  names(main_dist_output$dist_list) = names_dist 
+  names(main_dist_output$umap_list) = names_umap 
   
   
   
   ## SAVE of main distance measures, if specified.
   if(!is.null(save_loc)) {
-    save(output, file = save_loc %p% "_main_dist_comps.RData")
+    save(main_dist_output, file = save_loc %p% "_main_dist_comps.RData")
   } 
   
   
   
   
   ### scRNA-seq specific alternatives to SIDEREF:
-  
-  othr_dist_output <- vector(mode = "list", length = 1 + length(simlr_dims))
+  othr_dist_output <- list()
+  othr_dist_output[['dist_list']] <- 
+    vector(mode = "list", length = 1 + length(simlr_dims))
   
   ### 1: RAFSIL
-  othr_dist_output[[1]] <-
+  othr_dist_output$dist_list[[1]] <-
     RAFSIL(t(counts), NumC=NULL, nrep=rafsil_nrep, 
            method="RAFSIL1", gene_filter = FALSE,
            parallelize=TRUE, n_cores = n_cores)$D
@@ -229,20 +230,22 @@ computeAllDists <- function(counts, group_labels,
     diag(dist_simlr) <- 0
     
     ## store to list
-    othr_dist_output[[1+i]] <- 
+    othr_dist_output$dist_list[[1+i]] <- 
       dist_simlr
     
   }
   
-  names(othr_dist_output) <- 
+  names(othr_dist_output$dist_list) <- 
     c("RAFSIL", "SIMLR_" %p% simlr_dims %p% "_dims")
   
   
   if(!is.null(save_loc)) {
-    save(othr_dist_output, file = save_loc %p% "_othr_scrna_seq_dist_comps.RData")
+    save(othr_dist_output, 
+         file = save_loc %p% "_othr_scrna_seq_dist_comps.RData")
   } 
   
-  return(list(output=output, othr_dist_output=othr_dist_output))
+  return(list(main_dist_output = main_dist_output, 
+              othr_dist_output = othr_dist_output))
   
 }
 

@@ -1,10 +1,6 @@
 ### Splatter Dist computations and Results.
 set.seed(1)
 
-SPECTRAL_DIMS <- c(5, 10, 25)
-
-PCs <- c(25)
-
 library(here)
 source(here('R/libraries.R'))
 source(here('R/relative_group_dist_comps.R'))
@@ -28,16 +24,16 @@ splat_group_labels_low <- factor(sim@colData@listData$Group)
 
 splat_group_labels_high <- rep(0, length(splat_group_labels_low))
 
-subgroup_vars <- 
+global_group_vars <- 
   names(rowData(sim))[grepl("shared_genes", names(rowData(sim)))]
 
-subgroup_vars <- 
-  lapply(str_split(gsub("shared_genes", "", subgroup_vars), "_"),
+global_group_vars <- 
+  lapply(str_split(gsub("shared_genes", "", global_group_vars), "_"),
          function(x) "Group" %p% x)
 
-for(i in seq_len(length(subgroup_vars))) {
-  splat_group_labels_high[splat_group_labels_low %in% subgroup_vars[[i]]] <- 
-    "Subgroup" %p% i
+for(i in seq_len(length(global_group_vars))) {
+  splat_group_labels_high[splat_group_labels_low %in% global_group_vars[[i]]] <- 
+    "Global_Group" %p% i
 }
 
 splat_group_labels_high[splat_group_labels_high == "0"] <- 
@@ -52,18 +48,20 @@ splat_dist_res <-
   splatDistResPipeline(sim_counts, splat_group_labels_low,
                        var_features=VAR_FEATURES,
                        G = G,
-                       PCs = PCs,
-                       spectral_dims = SPECTRAL_DIMS,
+                       PCs = SPLAT_PCS,
+                       spectral_dims = SPLAT_SPECTRAL_DIMS,
                        n_cores = N_CORES,
                        n_clust = N_CLUST,
                        n_pcs = N_PCS,
+                       min_dist = MIN_DIST,
+                       n_neighbors = N_NEIGHBORS,
                        save_loc = here(F_PATH %p% "dist_res/" %p% SIM_NAME))
 
 
 meta_data <- 
   colData(splat_res$sim) %>% 
   data.frame() %>% 
-  mutate(SubGroup = splat_group_labels_high)
+  mutate(Global_Group = splat_group_labels_high)
 
 
 save(meta_data,

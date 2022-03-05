@@ -121,7 +121,7 @@ selectRefSet <- function(expr_matrix,
 
 SIDEREF <- function(expr_matrix,
                     n_top_genes = 300,
-                    R,
+                    R = 100,
                     ## cell reference set selection parameters
                     selection_method = "cell_embed_sample",
                     diff_expr_method = "diff_expr_norm",

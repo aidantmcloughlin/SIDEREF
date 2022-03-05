@@ -8,7 +8,7 @@ print(here())
 source(here('R/libraries.R'))
 source(here('R/relative_group_dist_comps.R'))
 source(here("R/distance_compute_helpers.R"))
-source(here('R/tm_load_cut.R'))
+source(here('R/tm_sample.R'))
 
 
 ############################# CONSTANTS ####################################
@@ -25,12 +25,6 @@ file_name <- "tab_muris_full"
 
 SAMPLE_CELL_TYPES = TRUE
 SAMPLE_PCT = FALSE
-
-## Distance setting constants:
-SPECTRAL_DIMS <- c(3, 5, 10, 25)
-PCs <- c(25)
-
- 
 
 ## Whether it's needed to run the preproc pipeline:
 RUN_DIST <- TRUE
@@ -67,17 +61,20 @@ for(x in data_store_list[1:length(data_store_list)]) {
         TabMurisDistResPipeline(data_full, 
                                 meta_data_full, 
                                 filename = NULL, 
-                                spectral_dims = SPECTRAL_DIMS, 
+                                spectral_dims = TM_SPECTRAL_DIMS, 
                                 n_cores = N_CORES,
                                 R = R,
                                 G = G,
-                                PCs = PCs,
+                                PCs = TM_PCS,
                                 var_features = VAR_FEATURES,
                                 save_loc = here("output/tab_muris_sc/dist_res/samp_ct") %p% 
                                   SAMPLE_CELL_TYPES %p% "_samp_pct" %p% SAMPLE_PCT %p% 
-                                  "_samp_size" %p% TM_SAMP_SIZE,
+                                  "_samp_size" %p% TM_SAMP_SIZE %p% 
+                                  "_use_droplet_only" %p% USE_DROPLET_ONLY,
                                 n_clust = N_CLUST,
-                                n_pcs = N_PCS)
+                                n_pcs = N_PCS,
+                                min_dist = MIN_DIST,
+                                n_neighbors = N_NEIGHBORS)
       
       ### save data 
       save(meta_data_full,

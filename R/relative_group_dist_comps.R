@@ -229,8 +229,17 @@ groupwiseDistanceHeatmap <- function(group_labels, dist_mat,
                          high = "orangered2", 
                          mid = "white", 
                          midpoint = 0.5, limit = c(0,1)) + 
-    labs(x = "Target", y = "Source", fill = "Group-Wise\nDistance") + 
     theme_minimal()
+  
+  if(symmetrize) {
+    p <- p + 
+      labs(x = "", y = "", fill = "Group-Wise\nDistance")
+  } else{
+    p <- p + 
+      labs(x = "Target", y = "Source", fill = "Group-Wise\nDistance")
+  }
+    
+    
   
   ## Add Top Row Labels, If specified
   if(!is.null(global_group_label_df)) {

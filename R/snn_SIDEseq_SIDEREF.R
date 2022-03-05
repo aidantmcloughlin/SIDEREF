@@ -19,6 +19,8 @@ snn_SIDEREF_SIDEseq <-
            g = G,
            n_pcs = N_PCS,
            n_clust = N_CLUST,
+           min_dist = MIN_DIST,
+           n_neighbors = N_NEIGHBORS,
            snn_k = SNN_K,
            n_cores = N_CORES,
            save_intermed_file = NULL) {
@@ -33,12 +35,12 @@ snn_SIDEREF_SIDEseq <-
     
     ## COMPUTE SIDEseq
     SIDEseq_res <- 
-      SIDEseqSimult(assay_sample, 
-                    diff_expr_method = "diff_expr_norm",
-                    similarity_method = "n_intersect",
-                    n_top_genes = g,
-                    parallelize = TRUE,
-                    n_cores = n_cores)
+      SIDEseq(assay_sample, 
+              diff_expr_method = "diff_expr_norm",
+              similarity_method = "n_intersect",
+              n_top_genes = g,
+              parallelize = TRUE,
+              n_cores = n_cores)
     
     knn_SIDEseq <- getKNNList(SIDEseq_res, k = snn_k)    
     
@@ -83,6 +85,8 @@ snn_SIDEREF_SIDEseq <-
                   selection_method = "cell_embed_sample",
                   n_pcs = n_pcs,
                   n_clust = n_clust,
+                  min_dist = MIN_DIST,
+                  n_neighbors = N_NEIGHBORS,
                   parallelize = TRUE,
                   n_cores = n_cores,
                   verbose = TRUE)

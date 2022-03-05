@@ -13,6 +13,8 @@ compute_time_SIDEREF_SIDEseq <-
            r = R,
            n_pcs = N_PCS,
            n_clust = N_CLUST,
+           min_dist = MIN_DIST,
+           n_neighbors = N_NEIGHBORS,
            n_cores = COMPUTE_TIME_N_CORES,
            save_intermed_file = NULL) {
     
@@ -36,12 +38,12 @@ compute_time_SIDEREF_SIDEseq <-
         ## COMPUTE SIDEseq
         start_time_sideseq <- Sys.time()
         SIDEseq_res <- 
-          SIDEseqSimult(assay_sample,
-                        diff_expr_method = "diff_expr_norm",
-                        similarity_method = "n_intersect",
-                        n_top_genes = g,
-                        parallelize = TRUE,
-                        n_cores = n_cores)
+          SIDEseq(assay_sample,
+                  diff_expr_method = "diff_expr_norm",
+                  similarity_method = "n_intersect",
+                  n_top_genes = g,
+                  parallelize = TRUE,
+                  n_cores = n_cores)
         end_time_sideseq <- Sys.time()
         
         sideseq_difftime <- sideseq_difftime + 
@@ -55,6 +57,8 @@ compute_time_SIDEREF_SIDEseq <-
                   selection_method = "cell_embed_sample",
                   n_pcs = n_pcs,
                   n_clust = n_clust,
+                  min_dist = MIN_DIST,
+                  n_neighbors = N_NEIGHBORS,
                   parallelize = TRUE,
                   n_cores = n_cores,
                   verbose = TRUE)
@@ -164,6 +168,8 @@ compute_time_SIDEREF_SIDEseq(
   r = R,
   n_pcs = N_PCS,
   n_clust = N_CLUST,
+  min_dist = MIN_DIST,
+  n_neighbors = N_NEIGHBORS,
   n_cores = COMPUTE_TIME_N_CORES,
   save_intermed_file = here("output/computations/" %p%
                               "compute_time_SIDEREF_SIDEseq.RData"))
@@ -181,7 +187,7 @@ SIDEREF_SIDEseq_compute_time_plot(compute_time_df,
 
 ggsave(here("manuscript_files/FigureS3.eps"),
        plot = last_plot(),
-       width = 15, height = 9,
+       width = 10, height = 6,
        device='eps', dpi=300)
 
 

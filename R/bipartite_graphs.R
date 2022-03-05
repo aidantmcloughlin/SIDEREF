@@ -1,6 +1,6 @@
 library(here)
 source(here('R/libraries.R'))
-source(here('R/subgroup_composition_gene_contrib.R'))
+source(here('R/relative_group_dist_comps.R'))
 
 library(network)
 library(GGally)
@@ -9,7 +9,7 @@ library(gridExtra)
 library(gtable)
 library(grid)
 
-
+## TODO: move above modules to libraries.R if graphs used in final package.
 ## TODO: some plot element location args just be adjustable to the user.
 
 
@@ -53,9 +53,11 @@ bipartiteNetworkGraph <-
            do_hclust_axes = FALSE,
            preset_levels = NULL,
            title = NULL,
+           two_color_grad = FALSE,
            legend_title = "Cluster Name",
            node_size = 5,
            text_size = 8,
+           s_t_size = 8,
            node_fill = "grey75",
            node_color = "black") {
     
@@ -86,23 +88,30 @@ bipartiteNetworkGraph <-
         data = edges, 
         aes(x = x1, y = y1, 
             xend = x2, yend = y2,
-            colour = dist)) +
-      # scale_colour_gradient2(low = "royalblue4",
-      #                       high = "orangered2",
-      #                       mid = "white",
-      #                       midpoint = 0.5, limit = c(0,1),
-      #                       guide = guide_colourbar(
-      #                         title = 'Group-Wise\nDistance',
-      #                         title.theme = element_text(size=8.5),
-      #                         direction = "horizontal"))
-      scale_colour_gradient(low = "royalblue4",
-                             high = "white",
-                             #midpoint = 0.5, 
-                            limit = c(0,1),
-                             guide = guide_colourbar(
-                               title = 'Group-Wise\nDistance',
-                               title.theme = element_text(size=8.5),
-                               direction = "horizontal"))
+            colour = dist))
+    
+    if(two_color_grad) {
+      p <- p +
+        scale_colour_gradient(low = "royalblue4",
+                              high = "white",
+                              #midpoint = 0.5, 
+                              limit = c(0,1),
+                              guide = guide_colourbar(
+                                title = 'Group-Wise\nDistance',
+                                title.theme = element_text(size=8.5),
+                                direction = "horizontal"))
+    } else{
+      p <- p +
+        scale_colour_gradient2(low = "royalblue4",
+                               high = "orangered2",
+                               mid = "white",
+                               midpoint = 0.5, limit = c(0,1),
+                               guide = guide_colourbar(
+                                 title = 'Group-Wise\nDistance',
+                                 title.theme = element_text(size=8.5),
+                                 direction = "horizontal"))   
+    }
+      
     
     p <- p +
       ggnewscale::new_scale_colour() +
@@ -157,9 +166,11 @@ bipartiteNetworkGraph <-
     ## Vertically aligned with nodes:
     p <- p + 
       geom_text(data = data.frame(x=-0.5, y=1,label="Source:"),
-                aes(x=x,y=y,label=label)) +
+                aes(x=x,y=y,label=label),
+                size = s_t_size) +
       geom_text(data = data.frame(x=-0.5, y=0,label="Target:"),
-                aes(x=x,y=y,label=label))
+                aes(x=x,y=y,label=label),
+                size = s_t_size)
     
     ## null points with legend
     p <- 

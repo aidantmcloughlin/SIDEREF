@@ -76,7 +76,7 @@ source(here('R/SIDEREF.R'))
 
 ## Constants:
 ## parallelization setting
-N_CORES <- 3
+N_CORES <- 4
 
 ## CONSTANTS 
 USE_DROPLET_ONLY <- TRUE
@@ -88,26 +88,33 @@ RAFSIL_NREP <- 20
 
 TM_SAMP_SIZE <- 100
 
+## Distance setting constants:
+SPLAT_SPECTRAL_DIMS <- c(5, 10, 25)
+SPLAT_PCS <- c(25)
+
+TM_SPECTRAL_DIMS <- c(3, 5, 10, 25)
+TM_PCS <- c(25)
+
+
 ##ie, using elbow criteria:
 N_CLUST <- NULL
 N_PCS <- NULL
 PC_ELBOW_CHG_THRES <- 0.025
 KM_ELBOW_CHG_THRES <- 0.025
 
+MIN_DIST <- 0.01
+N_NEIGHBORS <- 15
+
 ## params for supplementary analyses
-## TODO: update these once the code functions fine.
 CONVERGE_RES_REPS <- 3
 SNN_K <- 15
 SNN_REPS <- 5
 SNN_SAMP_SIZE <- 1500
 REF_SET_SIZES <- c(25, 50, 75, 100, 150, 200, 300)
 
-COMPUTE_TIME_N_CORES <- N_CORES
+COMPUTE_TIME_N_CORES <- 8
 N_CELLS_SIZES <- c(100, 250, 500, 750, 1000, 1500)
 COMPUTE_TIME_REPS <- 1
-
-
-
 
 
 

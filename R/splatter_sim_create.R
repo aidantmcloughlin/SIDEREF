@@ -21,7 +21,7 @@ generateSplatterSim <- function(
   
   ## constants
   n_groups <- length(group_probs)
-  n_subgroups <- length(group_share_params[[1]])
+  n_global_groups <- length(group_share_params[[1]])
   
   
   ##### Stop Checks -----------------------------------------------------------
@@ -87,7 +87,7 @@ generateSplatterSim <- function(
       group_share_probs     = group_share_params$shared_de_probs,
       group_share_facLocs   = shared_fac_locs,
       group_share_facScales = group_share_params$shared_de_fac_scales,
-      group_share_downProb  = rep(0.5, n_subgroups))
+      group_share_downProb  = rep(0.5, n_global_groups))
   }
   
   ## compute count variance
@@ -123,7 +123,7 @@ generateSplatterSim <- function(
       group_share_probs     = group_share_params$shared_de_probs,
       group_share_facLocs   = shared_fac_locs,
       group_share_facScales = group_share_params$shared_de_fac_scales,
-      group_share_downProb  = rep(0.5, n_subgroups))
+      group_share_downProb  = rep(0.5, n_global_groups))
   }
   
   ## compute count variance
@@ -179,7 +179,7 @@ generateSplatterSim <- function(
 
 
 
-### subgroup parameters ---------------------------------------------
+### Global Group parameters ---------------------------------------------
 
 ## Indexed concat-group list
  shared_de_list <-

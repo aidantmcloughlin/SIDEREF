@@ -23,10 +23,13 @@ meta_data_full <-
 ### Immune Tissue-Only Heatmaps
 ###############################################################################
 
-### Displaying all 80 cell types on the heatmap is unwieldy. In practice, one 
-##   has a subset of cell groups for which the global comparison will be useful, 
-##   such as broadly defined cell types compared to more narrowly defined cell 
-##   types.
+### Collect cell groups of interest:
+immune_cells_regex <- 
+  "B cell|T cell|macrophage|leukocyte|monocyte|" %p%
+  "erythro|hemato|granulo|basophil|blood|mast|natural killer"
+
+immune_cells <- meta_data_full$cell_id[which(grepl(immune_cells_regex, 
+                                                   meta_data_full$cell_type))]
 
 ## B Cells and Leukocytes
 b_cells     <- meta_data_full$cell_id[
@@ -42,7 +45,7 @@ endo_selected_cells <- meta_data_full %>%
   pull(cell_id)
 
 ## a couple unrelated cell types to provide "far end" of global distance gradient.
-unrelated_cells <- meta_data_full %>%
+unrelated_2_cells <- meta_data_full %>%
   dplyr::filter((tissue == "Lung" & cell_type == "type II pneumocyte") |
                   (tissue == "Tongue" & cell_type == "basal cell of epidermis")) %>% 
   pull(cell_id)

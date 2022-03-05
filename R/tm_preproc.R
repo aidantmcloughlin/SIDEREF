@@ -4,7 +4,7 @@ set.seed(10)
 ### load TM data and functions:
 source(here("R/tm_helper_functions.R"))
 ### Preproc Functions
-source(here("R/dist_and_clust_pipelines.R"))
+source(here("R/distance_compute_helpers.R"))
 
 load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"))
 

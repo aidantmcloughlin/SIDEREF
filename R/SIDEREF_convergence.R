@@ -26,9 +26,9 @@ heatmapSimilarity <- function(dist1, dist2,
                     type = "2")
   
   
-  pct_diffs <- quantile(abs(diffs), c(.90, .95, .975, .99, 1))
+  quantile_diffs <- quantile(abs(diffs), c(.90, .95, .975, .99, 1))
   
-  return(list(norm_diff = norm_diff, pct_diffs = pct_diffs))
+  return(list(norm_diff = norm_diff, quantile_diffs = quantile_diffs))
   
 }
 
@@ -47,6 +47,8 @@ SIDEREFHeatmapConvergenceDf <-
     r = 100,
     n_pcs = NULL,
     n_clust = NULL,
+    min_dist = 0.01,
+    n_neighbors = 15,
     n_cores = 1,
     save_intermed_file = NULL) {
     
@@ -67,10 +69,10 @@ SIDEREFHeatmapConvergenceDf <-
                  n_prev = sample_sizes[1:(steps-1)],
                  group_dist_cells = length(unique(meta_data$group_label))**2,
                  norm_diff = rep(0, steps-1),
-                 pctile_90 = rep(0, steps-1),
-                 pctile_95 = rep(0, steps-1),
-                 pctile_97.5 = rep(0, steps-1),
-                 pctile_99 = rep(0, steps-1),
+                 quantile_90 = rep(0, steps-1),
+                 quantile_95 = rep(0, steps-1),
+                 quantile_97.5 = rep(0, steps-1),
+                 quantile_99 = rep(0, steps-1),
                  max_diff = rep(0, steps-1)
       )
     
@@ -97,6 +99,8 @@ SIDEREFHeatmapConvergenceDf <-
                   R = r,
                   n_pcs = n_pcs,
                   n_clust = n_clust,
+                  min_dist = min_dist,
+                  n_neighbors = n_neighbors,
                   parallelize = TRUE,
                   n_cores = n_cores,
                   verbose = TRUE)
@@ -118,7 +122,7 @@ SIDEREFHeatmapConvergenceDf <-
           ## Compare and store to results df
           res_df_list[[j]]$norm_diff[i-1] <- heatmap_sim_res$norm_diff
           res_df_list[[j]][i-1, 5:ncol(res_df_list[[j]])] <- 
-            heatmap_sim_res$pct_diffs
+            heatmap_sim_res$quantile_diffs
           
           if(!is.null(save_intermed_file)) {
             save(res_df_list, file = save_intermed_file)
@@ -177,6 +181,8 @@ heatmap_convergence_res_df_list <-
     r = R,
     n_pcs = N_PCS,
     n_clust = N_CLUST,
+    min_dist = MIN_DIST,
+    n_neighbors = N_NEIGHBORS,
     n_cores = N_CORES,
     save_intermed_file = here("output/computations/sideref_converge_df_list.RData"))
 
@@ -206,8 +212,7 @@ avg_res_df <- avg_res_df[1:last_entry, ]
 p_converge <-
   avg_res_df %>%
   mutate(log_10_Fnorm = log(norm_diff, base=10) )%>% 
-  gather(cat, val, pctile_90:log_10_Fnorm) %>%
-  mutate(cat = gsub("pctile", "quantile", cat)) %>% 
+  gather(cat, val, quantile_90:log_10_Fnorm) %>%
   mutate(cat = case_when(
     cat == "log_10_Fnorm" ~ "Log (Base 10) of Frobenius Norm",
     cat == "max_diff" ~ "Maximum",
