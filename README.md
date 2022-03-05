@@ -1,5 +1,5 @@
 # SIDEREF
-SIDEREF dissimilarity matrix for examining scRNA seq global relationships
+SIDEREF dissimilarity matrix for examining scRNA seq global relationships.
 
 *Note: Package development for key functions in this repository is in-progress.*
 
