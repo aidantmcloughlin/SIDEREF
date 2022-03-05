@@ -437,9 +437,17 @@ ggsave(here("manuscript_files/Figure4.eps"),
        device='eps', dpi=250)
 
 
-ggsave(here("manuscript_files/FigureS7.png"),
-       plot = arranged_p_2,
+ggsave(here("manuscript_files/FigureS6.png"),
+       plot = arranged_p_2 +
+         theme(
+           panel.background = element_rect(fill = "white"), # bg of the panel
+           plot.background = element_rect(fill = "white", color = NA), # bg of the plot
+           #panel.grid.major = element_blank(), # get rid of major grid
+           #panel.grid.minor = element_blank(), # get rid of minor grid
+           legend.background = element_rect(fill = "white"), # get rid of legend bg
+           legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
+         ),
        width = 8, height = 9.75,
-       device='png', dpi=300)
+       device='png', dpi=450)
 
 

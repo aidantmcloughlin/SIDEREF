@@ -78,11 +78,21 @@ prepRanks <- function(de_marker_res, all_gene_names = c(),
                       keep_stat = FALSE) {
   ## reorganize so that downregulated genes are at the bottom of the list 
   
+  
+  if(keep_stat) {
+    de_marker_res_reorg <- 
+      de_marker_res %>%
+      mutate(rank = stat) %>% 
+      arrange(-rank)  
+  } else{
     de_marker_res_reorg <- 
       de_marker_res %>%
       mutate(rank = nrow(de_marker_res):1,
              rank = rank * ifelse(avg_log2FC > 0, 1, -1)) %>% 
-      arrange(-rank)
+      arrange(-rank)  
+  }
+  
+  
   
   de_marker_gene_order <- rownames(de_marker_res_reorg)
   
@@ -104,7 +114,8 @@ prepRanks <- function(de_marker_res, all_gene_names = c(),
 
 getGSEAScores <- function(marker_gs_list,
                           cell_type_name_vec, cells_vs,
-                          assay, meta_data) {
+                          assay, meta_data,
+                          mwt = TRUE) {
   de_marker_list <- vector(mode="list", length = length(cell_type_name_vec))
   
   names(de_marker_list) <- cell_type_name_vec
@@ -118,18 +129,40 @@ getGSEAScores <- function(marker_gs_list,
       pull(cell_id)
     
     
-    de_marker_list[[i]] <-
-      FindMarkers(assay,
-                  cells.1 = cells,
-                  cells.2 = setdiff(cells_vs, cells),
-                  test.use = "t",
-                  logfc.threshold = 0)  
-    
-    de_marker_list[[i]] <- 
-      prepRanks(de_marker_list[[i]],
-                all_gene_names = 
-                  marker_gs_list[[length(marker_gs_list)]])  
-    
+    if(!mwt) {
+      de_marker_list[[i]] <-
+        FindMarkers(assay,
+                    cells.1 = cells,
+                    cells.2 = setdiff(cells_vs, cells),
+                    test.use = "t",
+                    logfc.threshold = 0)  
+      
+      de_marker_list[[i]] <- 
+        prepRanks(de_marker_list[[i]],
+                  all_gene_names = 
+                    marker_gs_list[[length(marker_gs_list)]],
+                  keep_stat = FALSE)  
+    } else {
+      cells_1_idx <- which(colnames(assay) %in% cells)
+      cells_2_idx <- which(colnames(assay) %in% setdiff(cells_vs, cells))
+      
+      
+      res <-
+        mod.t.test(as.matrix(assay[, c(cells_1_idx, cells_2_idx)]), 
+                   group = factor(c(rep(1, length(cells_1_idx)),
+                                    rep(2, length(cells_2_idx)))), 
+                   paired = FALSE, adjust.method = "BH",
+                   sort.by = "none")
+      
+      de_marker_list[[i]] <- data.frame(stat = res$t)
+      rownames(de_marker_list[[i]]) <- rownames(assay)
+      
+      de_marker_list[[i]] <- 
+        prepRanks(de_marker_list[[i]],
+                  all_gene_names = 
+                    marker_gs_list[[length(marker_gs_list)]],
+                  keep_stat = TRUE)  
+    } 
     
     ### Run FGSEA function
     de_marker_list[[i]] <- fgsea(pathways = marker_gs_list, 
@@ -174,13 +207,23 @@ b_marker_gs_list_vs_non_leuko <-
 ### Compute GSEA scores 
 
 ### 3. B-non leuko DE list vs Leuko-non B DE list
+gsea_res_vs_all_other_cells_mwt <- 
+  getGSEAScores(marker_gs_list = b_marker_gs_list_vs_non_leuko,
+                cell_type_name_vec = leuko_names, 
+                cells_vs = setdiff(meta_data_full$cell_id,
+                                   b_cells),
+                assay = tm_preproc@assays$RNA,
+                meta_data = meta_data_full,
+                mwt = TRUE)
+
 gsea_res_vs_all_other_cells <- 
   getGSEAScores(marker_gs_list = b_marker_gs_list_vs_non_leuko,
                 cell_type_name_vec = leuko_names, 
                 cells_vs = setdiff(meta_data_full$cell_id,
                                    b_cells),
                 assay = tm_preproc@assays$RNA,
-                meta_data = meta_data_full)
+                meta_data = meta_data_full,
+                mwt = FALSE)
 
 
 ### Visualize GSEA Results
@@ -242,8 +285,5 @@ gsea_table <-
                      mutate(celltype = names(gsea_res_vs_all_other_cells)[i])
                  ))) %>% 
   dplyr::select(pathway, pval, celltype) %>% 
-  arrange(pathway, celltype) 
-
-gsea_table%>% 
-  write.csv(here("output/tab_muris_sc/gse_pvals.csv"))
+  arrange(pathway, celltype)
 

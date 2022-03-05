@@ -244,7 +244,7 @@ p_converge <-
   labs(y="",color=expression(paste("Stat of: |", D[n2]-D[n1], "|")))
 
 
-ggsave(here("manuscript_files/FigureS4.eps"),
+ggsave(here("manuscript_files/FigureS5.eps"),
        plot = p_converge,
        width = 15, height = 6,
        device='eps', dpi=300)

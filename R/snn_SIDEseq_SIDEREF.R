@@ -317,7 +317,7 @@ load(here("output/computations/" %p%
 SIDEREF_snn_plot(nn_consistency,
                  snn_k = SNN_K)
 
-ggsave(here("manuscript_files/FigureS2.eps"),
+ggsave(here("manuscript_files/FigureS1.eps"),
        plot = last_plot(),
        width = 15, height = 9,
        device='eps', dpi=300)

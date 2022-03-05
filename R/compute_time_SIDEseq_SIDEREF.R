@@ -185,7 +185,7 @@ SIDEREF_SIDEseq_compute_time_plot(compute_time_df,
                                   n_reps = COMPUTE_TIME_REPS)
 
 
-ggsave(here("manuscript_files/FigureS3.eps"),
+ggsave(here("manuscript_files/FigureS2.eps"),
        plot = last_plot(),
        width = 10, height = 6,
        device='eps', dpi=300)

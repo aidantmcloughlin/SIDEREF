@@ -307,32 +307,64 @@ splat_fig3 <-
   ggarrange(p1, p10, p11, nrow = 1, ncol = 3,
             common.legend = TRUE, legend="right")
 
-splat_figss6 <-
+splat_figss4 <-
   ggarrange(p12, p13, nrow = 1, ncol = 2,
             common.legend = TRUE, legend="right")
 
 
 ### save =========================================
 ggsave(here("manuscript_files//Figure1.png"),
-       plot = splat_fig1,
+       plot = splat_fig1 +
+         theme(
+           panel.background = element_rect(fill = "white"), # bg of the panel
+           plot.background = element_rect(fill = "white", color = NA), # bg of the plot
+           #panel.grid.major = element_blank(), # get rid of major grid
+           #panel.grid.minor = element_blank(), # get rid of minor grid
+           legend.background = element_rect(fill = "white"), # get rid of legend bg
+           legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
+         ),
        width = 13, height = 15,
-       device='png', dpi=400)
+       device='png', dpi=450)
 
 ggsave(here("manuscript_files/Figure2.png"),
-       plot = splat_fig2,
+       plot = splat_fig2 +
+         theme(
+           panel.background = element_rect(fill = "white"), # bg of the panel
+           plot.background = element_rect(fill = "white", color = NA), # bg of the plot
+           #panel.grid.major = element_blank(), # get rid of major grid
+           #panel.grid.minor = element_blank(), # get rid of minor grid
+           legend.background = element_rect(fill = "white"), # get rid of legend bg
+           legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
+         ),
        width = 13, height = 10,
-       device='png', dpi=400)
+       device='png', dpi=450)
 
 
 ggsave(here("manuscript_files/Figure3.png"),
-       plot = splat_fig3,
+       plot = splat_fig3 +
+         theme(
+           panel.background = element_rect(fill = "white"), # bg of the panel
+           plot.background = element_rect(fill = "white", color = NA), # bg of the plot
+           #panel.grid.major = element_blank(), # get rid of major grid
+           #panel.grid.minor = element_blank(), # get rid of minor grid
+           legend.background = element_rect(fill = "white"), # get rid of legend bg
+           legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
+         ),
        width = 23.5, height = 7,
-       device='png', dpi=400)
+       device='png', dpi=450)
 
-ggsave(here("manuscript_files/FigureS6.png"),
-       plot = splat_figss6,
+ggsave(here("manuscript_files/FigureS4.png"),
+       plot = splat_figss4 +
+         theme(
+           panel.background = element_rect(fill = "white"), # bg of the panel
+           plot.background = element_rect(fill = "white", color = NA), # bg of the plot
+           #panel.grid.major = element_blank(), # get rid of major grid
+           #panel.grid.minor = element_blank(), # get rid of minor grid
+           legend.background = element_rect(fill = "white"), # get rid of legend bg
+           legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
+         ),
        width = 16.5, height = 7,
-       device='png', dpi=400)
+       device='png', dpi=450)
 
 
 
@@ -365,7 +397,7 @@ splat_umap_fig <-
             common.legend = TRUE, legend="bottom") 
 
 
-ggsave(here("manuscript_files/FigureS5.eps"),
+ggsave(here("manuscript_files/FigureS3.eps"),
        plot = splat_umap_fig,
        width =14, height = 7,
        device='eps', dpi=300)
