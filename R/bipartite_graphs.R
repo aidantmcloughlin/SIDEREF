@@ -2,15 +2,8 @@ library(here)
 source(here('R/libraries.R'))
 source(here('R/relative_group_dist_comps.R'))
 
-library(network)
-library(GGally)
-library(ggnewscale)
-library(gridExtra)
-library(gtable)
-library(grid)
 
-## TODO: move above modules to libraries.R if graphs used in final package.
-## TODO: some plot element location args just be adjustable to the user.
+
 
 
 getBipartiteSegments <- function(distance_df,
@@ -56,8 +49,9 @@ bipartiteNetworkGraph <-
            two_color_grad = FALSE,
            legend_title = "Cluster Name",
            node_size = 5,
-           text_size = 8,
-           s_t_size = 8,
+           text_size = 11,
+           leg_text_size = 10,
+           s_t_size = 11,
            node_fill = "grey75",
            node_color = "black") {
     
@@ -98,7 +92,7 @@ bipartiteNetworkGraph <-
                               limit = c(0,1),
                               guide = guide_colourbar(
                                 title = 'Group-Wise\nDistance',
-                                title.theme = element_text(size=8.5),
+                                title.theme = element_text(size=leg_text_size),
                                 direction = "horizontal"))
     } else{
       p <- p +
@@ -108,7 +102,7 @@ bipartiteNetworkGraph <-
                                midpoint = 0.5, limit = c(0,1),
                                guide = guide_colourbar(
                                  title = 'Group-Wise\nDistance',
-                                 title.theme = element_text(size=8.5),
+                                 #title.theme = element_text(size=9),
                                  direction = "horizontal"))   
     }
       
@@ -154,15 +148,6 @@ bipartiteNetworkGraph <-
       scale_colour_manual(values=rep("black", n_groups))
     
     ## Add "Source" and "Target" monikers
-    
-    ## Old location of labels:
-    # med_x <- median(seq_len(n_groups))
-    # p <- p + 
-    #   geom_text(data = data.frame(x=med_x, y=1.2,label="Source"),
-    #              aes(x=x,y=y,label=label)) +
-    #   geom_text(data = data.frame(x=med_x, y=-0.2,label="Target"),
-    #             aes(x=x,y=y,label=label))
-    
     ## Vertically aligned with nodes:
     p <- p + 
       geom_text(data = data.frame(x=-0.5, y=1,label="Source:"),
@@ -170,7 +155,7 @@ bipartiteNetworkGraph <-
                 size = s_t_size) +
       geom_text(data = data.frame(x=-0.5, y=0,label="Target:"),
                 aes(x=x,y=y,label=label),
-                size = s_t_size)
+                size = s_t_size) 
     
     ## null points with legend
     p <- 
@@ -178,7 +163,7 @@ bipartiteNetworkGraph <-
       guides(
         colour = guide_legend(
           title = legend_title %p% ":",
-          title.theme = element_text(size=8.5),
+          title.theme = element_text(size=leg_text_size),
           override.aes = list(size = 0)))
     
     
@@ -190,7 +175,7 @@ bipartiteNetworkGraph <-
     
 }
 
-
+## TODO: Set location and text size arguments to be adjustable to the user.
 
 
 

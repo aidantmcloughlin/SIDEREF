@@ -31,6 +31,7 @@ rm(list = setdiff(ls(), pre_objs))
 pre_objs <- ls()
 
 source(here("R/splatter_post_hoc.R"))
+source(here("R/splatter_perf_metrics.R"))
 
 ## clear space
 rm(list = setdiff(ls(), pre_objs))
@@ -66,12 +67,25 @@ rm(list = setdiff(ls(), pre_objs))
 ## Run TM Data Analysis and Figure Creation  -----------------------------
 pre_objs <- ls()
 
-source(here("R/tm_post_hoc.R"))
+source(here("R/tm_heatmaps.R"))
+
 
 ## clear space
-rm(list = ls())
+rm(list = setdiff(ls(), pre_objs))
 
+pre_objs <- ls()
 
+source(here("R/tm_gsea.R"))
+
+## clear space
+rm(list = setdiff(ls(), pre_objs))
+
+pre_objs <- ls()
+
+source(here("R/tm_perf_metrics.R"))
+
+## clear space
+rm(list = setdiff(ls(), pre_objs))
 
 
 ## Supplemental Studies =======================================================
@@ -96,10 +110,8 @@ pre_objs <- ls()
 
 source(here("R/compute_time_SIDEseq_SIDEREF.R"))
 
-## clear space
-rm(list = setdiff(ls(), pre_objs))
 
 
 cat("Done!")
 
-
+rm(list = ls())

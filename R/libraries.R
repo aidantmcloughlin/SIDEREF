@@ -15,6 +15,11 @@ library(here)
 library(magrittr)
 library(forcats)
 library(GGally)
+library(ggnewscale)
+library(gridExtra)
+library(grid)
+library(network)
+library(gtable)
 library(ggpubr)
 library(readxl)
 library(Matrix)
@@ -35,9 +40,11 @@ library(statmod)
 library(LICORS)
 library(cluster)
 library(mclust)
+library(aricode)
 library(irlba)
 library(uwot)
 library(NetworkToolbox)
+library(aricode)
 
 ## RAFSIL dependencies:
 library(pracma)
@@ -113,8 +120,13 @@ SNN_SAMP_SIZE <- 1500
 REF_SET_SIZES <- c(25, 50, 75, 100, 150, 200, 300)
 
 COMPUTE_TIME_N_CORES <- 8
-N_CELLS_SIZES <- c(100, 250, 500, 750, 1000, 1500)
+N_CELLS_SIZES <- c(250, 500, 750, 1000, 1250, 1500, 2000)
 COMPUTE_TIME_REPS <- 1
 
+## params for computing performance metrics
+RUN_SPLATTER_PERFORMANCE_METRICS <- TRUE
+N_SPLATTER_SIMS_METRICS <- 10
 
+## Plotting:
+DPI <- 600
 

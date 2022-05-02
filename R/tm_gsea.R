@@ -5,12 +5,9 @@
 library(here)
 source(here("R/libraries.R"))
 source(here("R/tm_helper_functions.R"))
-source(here("R/tm_sample.R"))
 source(here("R/distance_compute_helpers.R"))
 
 set.seed(1)
-
-
 
 
 ## Load variable genes full data set to subset via metadata indices.

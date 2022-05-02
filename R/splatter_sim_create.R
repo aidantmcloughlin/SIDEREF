@@ -15,9 +15,7 @@ generateSplatterSim <- function(
   group_share_params = NULL,
   save_filename = NULL,
   auxiliary_base_params = NULL,
-  seed = 1) {
-  
-  set.seed(seed)
+  seed = 0) {
   
   ## constants
   n_groups <- length(group_probs)
@@ -68,6 +66,8 @@ generateSplatterSim <- function(
                                 de.facLoc   = fac_locs,
                                 de.facScale = fac_scales,
                                 de.downProb = rep(0.5, n_groups))
+  
+  params@seed <- seed
   
   
   ## Run Baseline Simulation before Noise adjustments
@@ -182,7 +182,7 @@ generateSplatterSim <- function(
 ### Global Group parameters ---------------------------------------------
 
 ## Indexed concat-group list
- shared_de_list <-
+shared_de_list <-
   list(c(3, 4, 5), 
        c(6, 7, 8), 
        c(9, 10, 11), 
@@ -190,19 +190,19 @@ generateSplatterSim <- function(
        c(15, 16, 17), 
        c(18, 19, 20))
 
-shared_de_probs   = c(0.01, # 3, 4, 5
-                      0.03, # 6, 7, 8
-                      0.03, # 9, 10, 11
-                      0.01, # 12, 13, 14
-                      0.01, # 15, 16, 17
-                      0.01) # 18, 19, 20
+shared_de_probs <- c(0.01, # 3, 4, 5
+                     0.03, # 6, 7, 8
+                     0.03, # 9, 10, 11
+                     0.01, # 12, 13, 14
+                     0.01, # 15, 16, 17
+                     0.01) # 18, 19, 20
 
- shared_mult_facs  = rep(3, 6)
- shared_fac_scales = c(rep(0.3, 4), 0.4, 0.4)
+shared_mult_facs  <- rep(3, 6)
+shared_fac_scales <- c(rep(0.3, 4), 0.4, 0.4)
 
 
 ### group parameters ------------------------------------------------
- group_probs <-
+group_probs <-
   c(1, 
     1, 1, 1, # 2, 3, 4
     1, 1, 1, # 5, 6, 7
@@ -213,7 +213,7 @@ shared_de_probs   = c(0.01, # 3, 4, 5
     1, 1, 1) # 18, 19, 20
 
 
- de_probs <- 
+de_probs <- 
   c(0.04, 
     0.02,
     0.02, 0.03, 0.04, # high ind (low shared)
@@ -223,12 +223,12 @@ shared_de_probs   = c(0.01, # 3, 4, 5
     0.005, 0.01, 0.015, # low ind (low shared, high variance)
     0.02, 0.03, 0.04) # high ind (low shared, high variance)
 
- de_mult_facs <- rep(3, 20)
- de_fac_scales <-
+de_mult_facs <- rep(3, 20)
+de_fac_scales <-
   c(rep(0.3, 14), rep(0.4, 3), rep(0.4, 3))
 
 ## floating point error with splatter package current version.
- group_probs <- round(group_probs / sum( group_probs), 24)
+group_probs <- round(group_probs / sum(group_probs), 24)
 
 
 generateSplatterSim(cells              = 1000,
@@ -246,6 +246,29 @@ generateSplatterSim(cells              = 1000,
                            shared_de_fac_scales   =  shared_fac_scales),
                     save_filename = 
                       here("output/splatter_sim/splatter_sim.RData"),
-                    auxiliary_base_params = NULL)
+                    auxiliary_base_params = NULL,
+                    seed=0)
+
+
+for(i in seq_len(N_SPLATTER_SIMS_METRICS)) {
+  cat("Gen Splatter Dataset: " %p% i)
+  generateSplatterSim(cells              = 1000,
+                      n_genes            = 1e4,
+                      ## ind group params:
+                      group_probs        =  group_probs,
+                      de_probs           =  de_probs,
+                      mult_factors       =  de_mult_facs,
+                      fac_scales         =  de_fac_scales,
+                      ## group share params:
+                      group_share_params = 
+                        list(shared_de_list         =  shared_de_list,
+                             shared_de_probs        =  shared_de_probs,
+                             shared_de_mult_factors =  shared_mult_facs,
+                             shared_de_fac_scales   =  shared_fac_scales),
+                      save_filename = 
+                        here("output/splatter_sim/splatter_sim" %p% i %p% ".RData"),
+                      auxiliary_base_params = NULL,
+                      seed = i*10)
+}
 
 

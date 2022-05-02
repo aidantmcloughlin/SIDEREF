@@ -131,8 +131,7 @@ presetAxisLabels <- function(distance_df, preset_levels) {
 
 
 ### TODO: I think this function needs to be vetted.
-### TODO: yeah this is not functional for choosing either y or x be numeric only 
-##    so at the very least needs clearer documentation describing the use cases.
+### TODO: Debug setting of numeric axes labels.
 numericAxisLabels <- function(
   distance_df, 
   do_numeric_x, 
@@ -206,7 +205,8 @@ groupwiseDistanceHeatmap <- function(group_labels, dist_mat,
                                      preset_levels = NULL,
                                      do_numeric_x = FALSE,
                                      do_numeric_y = FALSE,
-                                     global_group_label_df = NULL) {
+                                     global_group_label_df = NULL,
+                                     text_size = 3.88) {
   
   n_groups <- length(unique(group_labels))
   
@@ -254,7 +254,8 @@ groupwiseDistanceHeatmap <- function(group_labels, dist_mat,
                 aes(x = x, 
                     y = y,
                     label = hm_global_group_label,
-                    colour = global_group_label)) + 
+                    colour = global_group_label),
+                size = text_size) + 
       expand_limits(y = n_groups+2) + 
       theme(panel.grid.major = element_blank()) + 
       guides(
@@ -313,48 +314,6 @@ getDistDf <- function(
   
   
   return(distance_df)
-}
-
-
-## TODO: are we still using this function at all?
-computeRankAccuracy <- function(group_labels, 
-                                dist_mat,
-                                ground_truth,
-                                dist_name = NULL) {
-  
-  n_groups <- length(unique(group_labels))
-  
-  distance_df <- getDistDf(group_labels, dist_mat) %>%
-    mutate(ground_truth_dist = ground_truth) %>% 
-    dplyr::group_by(source_group) %>% 
-    mutate(rank = rank(dist),
-           ground_truth_rank = rank(ground_truth_dist))
-  
-  
-  overall_rank_acc <- mean(distance_df$rank==distance_df$ground_truth_rank)
-  
-  overall_mean_rank_error <- mean(abs(distance_df$rank - distance_df$ground_truth_rank))
-  
-  
-  groupwise_rank_stats <- 
-    distance_df %>% 
-    group_by(source_group) %>% 
-    dplyr::summarise(
-      spearman = 1 - 6*sum((rank-ground_truth_rank)^2)/(n_groups^3-n_groups),
-      rank_acc = mean(rank == ground_truth_rank),
-      mean_rank_error = mean(abs(rank - ground_truth_rank)))
-  
-  
-  
-  return(list(overall_rank_acc          = overall_rank_acc,
-              overall_mean_rank_error   = overall_mean_rank_error,
-              overall_mean_spearman     = groupwise_rank_stats %>% dplyr::pull(spearman) %>% mean(),
-              groupwise_rank_acc        = groupwise_rank_stats %>% dplyr::pull(rank_acc),
-              groupwise_mean_rank_error = groupwise_rank_stats %>% dplyr::pull(mean_rank_error),
-              groupwise_spearman        = groupwise_rank_stats %>% dplyr::pull(spearman),
-              group_name_vec = groupwise_rank_stats$source_group,
-              dist_name = dist_name))
-  
 }
 
 

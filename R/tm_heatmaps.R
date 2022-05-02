@@ -9,9 +9,9 @@ set.seed(1)
 
 
 ############ PLOTTING CONSTANTS ###############
-BIP_FIG_TITLE_SIZE <- 8
-HM_FIG_TITLE_SIZE <- 8
-TWO_COLOR_GRAD <- FALSE
+BIP_FIG_TITLE_SIZE <- 13
+HM_FIG_TITLE_SIZE <- 13
+TWO_COLOR_GRAD <- TRUE
 
 FILE_TAGS <- 
   c("main_dist_comps", "othr_scrna_seq_dist_comps", "spectral_dist_comps")
@@ -65,30 +65,6 @@ plot_titles_list <-
 ############################### ===============================================
 
 
-cells_leuko_levels <- 
-  c("Type II Pneumocyte, Lung",
-    "Basal Cell of Epidermis, Tongue", 
-    "Endocardial Cell, Heart and Aorta",
-    "Endothelial Cell, Limb Muscle", 
-    "Lung Endothelial Cell, Lung", 
-    "Leukocyte, Liver", 
-    "Leukocyte, Bladder",
-    "Leukocyte, Thymus",
-    "Leukocyte, Kidney",
-    "Leukocyte, Lung"
-  )
-
-cells_b_levels <- 
-  c("Type II Pneumocyte, Lung", 
-    "Basal Cell of Epidermis, Tongue",
-    "Endocardial Cell, Heart and Aorta",
-    "Endothelial Cell, Limb Muscle", 
-    "Lung Endothelial Cell, Lung", 
-    "B Cell, Spleen", 
-    "B Cell, Lung", 
-    "B Cell, Limb Muscle", 
-    "B Cell, Mammary Gland")
-
 cells_b_leuko_levels <- 
   c("Type II Pneumocyte, Lung",
     "Basal Cell of Epidermis, Tongue", 
@@ -106,9 +82,7 @@ cells_b_leuko_levels <-
     "B Cell, Mammary Gland")
 
 cell_type_levels_list <- 
-  list(cells_leuko = cells_leuko_levels,
-       cells_b = cells_b_levels,
-       cells_b_leuko = cells_b_leuko_levels
+  list(cells_b_leuko = cells_b_leuko_levels
   )
 
 
@@ -117,7 +91,8 @@ cell_type_levels_list <-
 ### Selecting the IDs of these cells types from given meta data set
 #################################### ==========================================
 
-### Displaying all 80 cell types on the heatmap is unwieldy. In practice, one 
+### Displaying all cell types on the heatmap is unwieldy. In practice (for 
+###  compositional comparisons), one 
 ##   has a subset of cell groups for which the global comparison will be useful, 
 ##   such as broadly defined cell types compared to more narrowly defined cell 
 ##   types.
@@ -143,20 +118,18 @@ GetTMHeatmapsCellIDs <- function(meta_data_full) {
     pull(cell_id)
   
   
-  cells_leuko <- union(leuko_cells, 
+  cells_leuko <- union(leuko_cells,
                        union(endo_selected_cells,
                              unrelated_cells))
-  
-  cells_b <- union(b_cells, 
+
+  cells_b <- union(b_cells,
                    union(endo_selected_cells,
                          unrelated_cells))
   
   cells_b_leuko <- union(cells_leuko,
                          cells_b)
   
-  return(list(cells_leuko = cells_leuko,
-              cells_b = cells_b,
-              cells_b_leuko = cells_b_leuko))
+  return(list(cells_b_leuko = cells_b_leuko))
 }
 
 
@@ -189,11 +162,10 @@ bipartiteTMCells <-
         source_groups = source_groups,
         node_size = 7.5,
         text_size = 3,
-        s_t_size = 3,
+        s_t_size = 4,
         title = title,
         two_color_grad = two_color_grad,
-        legend_title = "Cell Type, Tissue") +
-      theme(plot.title = element_text(size=BIP_FIG_TITLE_SIZE))
+        legend_title = "Cell Type, Tissue")
     
     return(p)
 }
@@ -319,7 +291,8 @@ processTMHeatmaps <- function(
             meta_data = meta_data_full,
             preset_levels = cell_type_levels_list[[n]],
             source_groups = c("Leukocyte, Bladder", "Leukocyte, Kidney"),
-            title = plot_titles_list[[i]][p])
+            title = plot_titles_list[[i]][p]) + 
+          theme(plot.title = element_text(size=BIP_FIG_TITLE_SIZE))
            
       }
       
@@ -336,7 +309,8 @@ processTMHeatmaps <- function(
                                                    "PCA (25 Dims.)",
                                                    "1 - |Pearson Correlation|"),
                    FALSE, TRUE),
-          symmetrize = FALSE)
+          symmetrize = FALSE) + 
+        theme(legend.title = element_text(size=12))
       
       plot_list_hm_sym[[p]] <- 
         groupwiseDistanceHeatmapCellType(
@@ -353,8 +327,7 @@ processTMHeatmaps <- function(
           symmetrize = TRUE)
     
     }
-    #plot_groups <- vector(mode = "list", length = n_cell_groups)
-    #names(plot_groups) <- names(hm_cell_ids)
+    
     plot_groups[[n]] <- 
       list(plot_list_bip = plot_list_bip,
            plot_list_hm_asym = plot_list_hm_asym,
@@ -403,7 +376,7 @@ arranged_p_1 <-
       labs(title = "(e) " %p% tm_group_hm_list_main$cells_b_leuko$plot_list_hm_asym$euclid_dist$labels$title),
     tm_group_hm_list_other$cells_b_leuko$plot_list_hm_asym$RAFSIL +
       labs(title = "(f) " %p% tm_group_hm_list_other$cells_b_leuko$plot_list_hm_asym$RAFSIL$labels$title),
-    #ggplot() + theme_minimal(),
+    
     tm_group_hm_list_main$cells_b_leuko$plot_list_hm_asym$pear_dist +
       labs(title = "(g) " %p% tm_group_hm_list_main$cells_b_leuko$plot_list_hm_asym$
              pear_dist$labels$title),
@@ -434,20 +407,12 @@ arranged_p_2 <-
 ggsave(here("manuscript_files/Figure4.eps"),
        plot = arranged_p_1,
        width = 17, height = 15,
-       device='eps', dpi=250)
+       device='eps', dpi=DPI)
 
 
 ggsave(here("manuscript_files/FigureS6.png"),
-       plot = arranged_p_2 +
-         theme(
-           panel.background = element_rect(fill = "white"), # bg of the panel
-           plot.background = element_rect(fill = "white", color = NA), # bg of the plot
-           #panel.grid.major = element_blank(), # get rid of major grid
-           #panel.grid.minor = element_blank(), # get rid of minor grid
-           legend.background = element_rect(fill = "white"), # get rid of legend bg
-           legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
-         ),
+       plot = arranged_p_2,
        width = 8, height = 9.75,
-       device='png', dpi=450)
+       device='png', dpi=DPI)
 
 

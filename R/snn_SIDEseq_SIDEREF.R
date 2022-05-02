@@ -315,9 +315,11 @@ load(here("output/computations/" %p%
      verbose = TRUE)
 
 SIDEREF_snn_plot(nn_consistency,
-                 snn_k = SNN_K)
+                 snn_k = SNN_K) + 
+  theme(axis.title = element_text(size=13),
+        legend.title = element_text(size=13))
 
 ggsave(here("manuscript_files/FigureS1.eps"),
        plot = last_plot(),
-       width = 15, height = 9,
-       device='eps', dpi=300)
+       width = 12, height = 7,
+       device='eps', dpi=DPI)

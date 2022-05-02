@@ -239,15 +239,15 @@ p_converge <-
                        unique(avg_res_df$n) %p% ')',
                      minor_breaks = NULL) + 
   theme_bw() + 
-  #labs(y="", color="Statistic of Groupwise Relative Distances\n
-  #                        Absolute Difference of\nTwo Sample Sizes: " %p% bquote(D[n2]))
-  labs(y="",color=expression(paste("Stat of: |", D[n2]-D[n1], "|")))
+  labs(y="",color=expression(paste("Stat of: |", D[n2]-D[n1], "|"))) + 
+  theme(axis.title = element_text(size=13),
+        legend.title = element_text(size=13))
 
 
 ggsave(here("manuscript_files/FigureS5.eps"),
        plot = p_converge,
        width = 15, height = 6,
-       device='eps', dpi=300)
+       device='eps', dpi=DPI)
 
 
 

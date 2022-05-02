@@ -24,6 +24,7 @@ compute_time_SIDEREF_SIDEseq <-
                  SIDEseq_comp_time = 0)
     
     for(n in seq_len(length(n_cells_sizes))) {
+      cat("computing cell size: " %p% n_cells_sizes[n])
       ## initialize
       sideseq_difftime <- 0
       sideref_difftime <- 0
@@ -85,40 +86,80 @@ compute_time_SIDEREF_SIDEseq <-
     
   }
 
-# 
-# summary_rand_glm <-
-#   summary(
-#     glm(compute_time ~ ref_set_size,
-#         data = compute_time_long %>% 
-#           dplyr::filter(method == "Random Cells (Avg)"))
-#   )
+
 
 SIDEREF_SIDEseq_compute_time_plot <- 
   function(compute_time_df,
-           n_reps) {
+           n_reps,
+           log_scale=FALSE) {
     n_cells <- unique(compute_time_df$n_cells)
     
-    p <- ggplot(data = compute_time_df %>% 
-                  gather(method, run_time, 
-                         SIDEREF_comp_time, SIDEseq_comp_time) %>% 
-                  mutate(method = gsub("_comp_time", "", method),
-                         method = ifelse(method == "SIDEREF",
-                                         method %p% " (" %p% R %p% " Ref. Set Size)",
-                                         method))) + 
+    compute_time_df <-
+      compute_time_df %>% 
+      gather(method, run_time, 
+             SIDEREF_comp_time, SIDEseq_comp_time) %>% 
+      mutate(method = gsub("_comp_time", "", method),
+             method = ifelse(method == "SIDEREF",
+                             method %p% " (" %p% R %p% " Ref. Set Size)",
+                             method))
+    
+    compute_time_df <-
+      compute_time_df %>% 
+      mutate(log_n_cells = log(n_cells),
+             log_run_time = log(run_time))
+    
+    
+    
+    p1 <- ggplot(data = compute_time_df) + 
       geom_line(aes(x = n_cells, 
-                    y = run_time, 
+                    y = run_time,
                     colour = method)) +
       geom_point(aes(x = n_cells, 
-                     y = run_time, 
+                     y = run_time,
                      colour = method)) +
-      theme_bw() + 
+      theme_bw()
+    
+    p1 <- p1 +
       scale_x_continuous(name = "Number of Cells", 
                          breaks= n_cells,
                          minor_breaks = NULL) + 
       labs(x = "Number of Cells",
-           y = "Compute Time (Minutes)",
-           colour = "Method")# + 
-      #scale_colour_manual(values = c("blue", "red"))
+           y = "Compute Time, Minutes",
+           colour = "Method")
+    
+    ## LM for power rule.
+    m1 <- lm(log_run_time ~ log_n_cells, data=compute_time_df %>% 
+               dplyr::filter(method == "SIDEREF (100 Ref. Set Size)"))$coefficients %>% unname()
+    m2 <- lm(log_run_time ~ log_n_cells, data=compute_time_df %>% 
+               dplyr::filter(method == "SIDEseq"))$coefficient %>% unname()
+    
+    m1[1] <- exp(m1[1])
+    m2[1] <- exp(m2[1])
+    
+    p2 <- ggplot(data = compute_time_df) + 
+      geom_line(aes(x = log_n_cells, 
+                    y = log_run_time,
+                    colour = method)) +
+      geom_point(aes(x = log_n_cells, 
+                     y = log_run_time,
+                     colour = method)) +
+      theme_bw() + 
+      labs(x = "ln(Number of Cells)",
+           y = "ln(Compute Time, Minutes)")
+    
+    label_data <- 
+      data.frame(
+        y = c(6, 5.5),
+        x = 6.25,
+        slope = "OLS Slope: " %p% as.character(round(c(m2[2], m1[2]), 3)),
+        method = c("SIDEseq", "SIDEREF (100 Ref. Set Size)"))
+    
+    p2 <- p2 + 
+      geom_text(data = label_data, aes(x=x,y=y,label=slope,colour=method)) + 
+      labs(colour = "Method")
+        
+    p <- ggarrange(p1, p2, ncol=2, common.legend = TRUE)
+    
     
     return(p)
   }
@@ -156,7 +197,6 @@ rm(meta_data_full, tm_preproc)
 
 meta_data <- prepTMGroupLabels(meta_data, include_tissue = TRUE)
 
-
 ### Run analysis function with loaded data:
 
 compute_time_SIDEREF_SIDEseq(
@@ -180,15 +220,15 @@ load(here("output/computations/" %p%
             "compute_time_SIDEREF_SIDEseq.RData"),
      verbose = TRUE)
 
-
 SIDEREF_SIDEseq_compute_time_plot(compute_time_df,
-                                  n_reps = COMPUTE_TIME_REPS)
+                                  n_reps = COMPUTE_TIME_REPS,
+                                  log_scale=TRUE)
 
 
 ggsave(here("manuscript_files/FigureS2.eps"),
        plot = last_plot(),
-       width = 10, height = 6,
-       device='eps', dpi=300)
+       width = 10, height = 5,
+       device='eps', dpi=DPI)
 
 
 
