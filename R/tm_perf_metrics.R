@@ -62,8 +62,8 @@ monocytes <- c("monocyte", "promonocyte", "classical monocyte", "non-classical m
 rbcs <- c("erythroblast", "proerythroblast")
 
 nk_cells <- c("natural killer cell")
-t_cells <- c("T cell", "immature T cell")
-b_cells <- c("B cell", "immature B cell")
+t_cells <- c("T cell")
+b_cells <- c("B cell")
 pro_b_cells <- c("early pro-B cell", "Fraction A pre-pro B cell", "late pro-B cell")
 stromal <- c("stromal cell", "mesenchymal cell", "mesenchymal stem cell")
 
@@ -91,8 +91,9 @@ others <-
     "hepatocyte", 
     "keratinocyte",
     "kidney cell", "mesangial cell",
-    "neuroendocrine cell", "skeletal muscle satellite cell",
-    "DN1 thymic pro-T cell")
+    "neuroendocrine cell", "skeletal muscle satellite cell")
+
+other_immunes <- c("DN1 thymic pro-T cell")
 
 #### Progenitor, i.e., Cells that will develop into more distinguished types.
 progenitor_cells <-
@@ -119,7 +120,8 @@ global_group_list <-
        endothelial = endothelial,
        basal = basal,
        epithelial = epithelial,
-       rbcs = rbcs)
+       rbcs = rbcs,
+       other_immunes = other_immunes)
 
 group_global_group_map <- 
   lapply(seq_len(length(global_group_list)), 
@@ -144,7 +146,8 @@ group_global_group_map_all <-
     !cell_group_high %in% c("broad_cell_types", 
                             "granulocytes", 
                             "monocytes",
-                            "rbcs"),
+                            "rbcs",
+                            "other_immunes"),
     ## removing progenitor cells.
     !cell_group_low %in% c(progenitor_cells)
   ) %>%
