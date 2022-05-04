@@ -6,6 +6,11 @@ SIDEREF dissimilarity matrix for examining scRNA seq global relationships.
 In order to reproduce all analysis, you will first need to download the following 
 files from *Tabula Muris*  [here](https://figshare.com/articles/dataset/Robject_files_for_tissues_processed_by_Seurat/5821263). The placeholder directory for these raw data files is ``data/tab_muris_sc/seurat``.
 
+We also provide an R script to automatically download and place the data files:
+  ``library(here)``
+  ``source(here("R/download_data.R"))``
+
+
 A brief description of this data is located  [here](https://tabula-muris.ds.czbiohub.org). We will shortly 
 include a script to automatically download the needed files to the proper relative location.
 
