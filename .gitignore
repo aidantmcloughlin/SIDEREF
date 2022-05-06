@@ -3,8 +3,8 @@
 .Rapp.history
 
 # Session Data files
-.RData
-.Robj
+*.RData
+*.Robj
 
 # User-specific files
 .Ruserdata
@@ -21,9 +21,8 @@
 # RStudio files
 .Rproj.user/
 
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+# DSStore
+.DS_Store
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
