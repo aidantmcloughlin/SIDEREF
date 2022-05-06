@@ -2,12 +2,13 @@
 set.seed(1)
 
 library(here)
+
 source(here('R/libraries.R'))
 source(here('R/relative_group_dist_comps.R'))
 source(here("R/distance_compute_helpers.R"))
 
 
-F_PATH <- "output/"
+F_PATH <- "output/splatter_sim/"
 DIST_REL_PATH <- "dist_res/"
 SIM_NAME <- "splatter_sim"
 

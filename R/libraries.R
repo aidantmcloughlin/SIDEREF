@@ -20,6 +20,8 @@ library(gridExtra)
 library(grid)
 library(network)
 library(gtable)
+
+## Note: ggpubr package has installation compiler issues on Savio HPC cluster.
 library(ggpubr)
 library(readxl)
 library(Matrix)
@@ -43,8 +45,9 @@ library(mclust)
 library(aricode)
 library(irlba)
 library(uwot)
+
+## Note: NetworkToolbox package has installation compiler issues on Savio HPC cluster.
 library(NetworkToolbox)
-library(aricode)
 
 ## RAFSIL dependencies:
 library(pracma)

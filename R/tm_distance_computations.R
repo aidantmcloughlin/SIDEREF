@@ -24,19 +24,20 @@ if(USE_DROPLET_ONLY) {
 file_name <- "tab_muris_full"
 
 SAMPLE_CELL_TYPES = TRUE
-SAMPLE_PCT = FALSE
 
 ## Whether it's needed to run the preproc pipeline:
 RUN_DIST <- TRUE
 
 
 tm_data_list <- 
-  tmLoadCut(file_name = file_name, data_pct = data_pct, 
-            1, 1,
+  tmLoadCut(file_name = file_name, 
+            reps = 1,
             sample_size = TM_SAMP_SIZE,
             sample_cell_types = SAMPLE_CELL_TYPES,
-            keep_droplet = KEEP_DROPLET, keep_facs = KEEP_FACS,
-            sample_pct = SAMPLE_PCT)
+            keep_droplet = KEEP_DROPLET, 
+            keep_facs = KEEP_FACS)
+
+new_idx <- tm_data_list$cell_idx_splits[[1]]
 
 ## extract objects
 for(n in names(tm_data_list)) {
