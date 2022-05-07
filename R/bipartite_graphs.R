@@ -3,9 +3,6 @@ source(here('R/libraries.R'))
 source(here('R/relative_group_dist_comps.R'))
 
 
-
-
-
 getBipartiteSegments <- function(distance_df,
                                  source_groups) {
   
@@ -88,7 +85,6 @@ bipartiteNetworkGraph <-
       p <- p +
         scale_colour_gradient(low = "royalblue4",
                               high = "white",
-                              #midpoint = 0.5, 
                               limit = c(0,1),
                               guide = guide_colourbar(
                                 title = 'Group-Wise\nDistance',
@@ -99,10 +95,11 @@ bipartiteNetworkGraph <-
         scale_colour_gradient2(low = "royalblue4",
                                high = "orangered2",
                                mid = "white",
-                               midpoint = 0.5, limit = c(0,1),
+                               midpoint = 0.5, 
+                               limit = c(0,1),
                                guide = guide_colourbar(
                                  title = 'Group-Wise\nDistance',
-                                 #title.theme = element_text(size=9),
+                                 title.theme = element_text(size=leg_text_size),
                                  direction = "horizontal"))   
     }
       

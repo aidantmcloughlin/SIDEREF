@@ -89,7 +89,7 @@ TabMurisDistResPipeline <-
            min_dist = 0.01) {
     
     sub_res <- TabMurisProcSubset(full_data, meta_data, filename,
-                                  var_features = var_features) 
+                                  var_features = var_features)
     
     full_data_subset_variable <- sub_res[[1]]
     cell_inds <- sub_res[[2]]

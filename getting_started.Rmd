@@ -1,0 +1,295 @@
+---
+title: "Getting started with SIDEREF"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+set.seed(1)
+library(here)
+source(here("R/libraries.R"))
+```
+
+## Introduction
+
+In this brief article, we demonstrate the SIDEREF analysis pipeline using 
+a set of preprocessed scRNA seq data from Seurat.
+
+SIDEREF is demonstrated to more reliably compute summarized distances between 
+cell types. In particular one can leverage this information to compare 
+broadly defined cell types, such as leukocytes, to narrowly defined cell types, 
+such as B cells and T cells, as well as simply examining how related the 
+well-defined cell types are to each other. 
+Additionally, one could consider computing SIDEREF 
+on manually selected gene modules to see how this impacts the cell type level 
+distances. In this vignette, we demonstrate the first mentioned use case.
+
+We provide a sample of of the Tabula Muris (TM) droplet scRNA seq data, used in the main 
+analysis. If you would like to download and process this data for yourself, 
+see ``README.md``, ``R/download_data.R`` for data downloading, and 
+``R/tm_combine_raw.R``, ``R/tm_preproc.R`` for data processing. For the 
+analysis in this vignette, we want annotated cell types to compare against 
+each other. To provide an initial cell type annotation of fresh scRNA 
+seq data, one popular pipeline is through the [Seurat package](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html#cluster-the-cells-1)
+
+
+## Subsampling and Preprocessing TM data
+
+Below, for demonstration, we show the process of loading the preprocessed  
+TM droplet expression matrix and metadata, and subsampling by cell type. If 
+your data is $<3000$ cells, you may go ahead and run SIDEREF (taking advantage 
+of default parallelization). Otherwise, we find that for the ~55,000 cell 
+TM data, subsampling 100 cells per cell type is sufficient to recover stable 
+cell type relative distances.
+
+```{r Extract-Assay-Meta, eval=FALSE, echo=TRUE}
+load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"),
+     verbose=TRUE)
+
+### Set constants
+cell_type_sample_size <- 100
+n_variable_genes <- 3000
+
+### B Cell, T Cell leukocyte extraction
+cell_types_of_interest <- c("B cell", "natural killer cell", "leukocyte", 
+                            "bladder cell")
+
+### For T.M. data, we want distinct celltype, tissue combinations.
+### Note: This column is in fact already stored in the data as ``group_label``
+meta_data_full <- 
+  meta_data_full %>% 
+  dplyr::mutate(cell_type_tissue = str_to_title(paste(cell_type, tissue, sep = ", ")))
+                
+cell_types_tissues_of_interest <- 
+  meta_data_full %>%
+  dplyr::filter(cell_type %in% cell_types_of_interest) %>% 
+  dplyr::pull(cell_type_tissue) %>% unique()
+  
+
+cells_sample_idx <- c()
+
+### Sample one cell type at a time and append to ID list.
+for(ct_tiss in cell_types_tissues_of_interest) {
+  cell_type_idx <- 
+      which(meta_data_full$cell_type_tissue %in% ct_tiss)
+  
+  cells_sample_idx <- 
+    c(cells_sample_idx, 
+      sample(cell_type_idx, 
+             min(length(cell_type_idx), cell_type_sample_size)))
+}
+
+### Subset the data and metadata objects
+data_subset <- data_full[ , cells_sample_idx]
+meta_data_subset <- meta_data_full[cells_sample_idx, ]
+
+### Seurat Package can yield us the 3,000 most variable genes for our group
+###   and preprocess the data.
+data_subset_seurat <-
+  CreateSeuratObject(data_subset, project = "SeuratProject", assay = "RNA")
+
+### Getting the variable genes
+data_subset_seurat <- 
+  FindVariableFeatures(data_subset_seurat, nfeatures = n_variable_genes)
+
+### Preprocessing the data 
+data_subset_seurat <- 
+  NormalizeData(data_subset_seurat)
+data_subset_seurat <- 
+  ScaleData(data_subset_seurat)
+
+data_subset_variable <- data_subset_seurat@assays$RNA@scale.data
+
+### Confirm the dimensions look okay.
+### Note: for several cell types, there are less cells than the subsample size.
+dim(data_subset_variable)
+
+## Now we will save the two objects as an RData that is available on the repo.
+save(data_subset_variable, meta_data_subset,
+     file = here("output/tab_muris_sc/vignette_data/tm_sample.RData"))
+
+## RM large tm objects and conserve space
+rm(list = c("data_full", "meta_data_full", "data_subset_seurat", "tm_data_list"))
+```
+
+
+## Running SIDEREF
+
+The preprocessed sample data in the chunk above is available on the GitHub 
+repository. Feel free to run the code for yourself to explore the cell 
+type subsampling procedure (and Seurat preprocessing steps) or simply review.
+
+Now, we will reload the data and run ``SIDEREF()`` on the preprocessed gene 
+expression matrix, which returns the symmetric distance matrix.
+
+```{r run-SIDEREF, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+
+load(here("output/tab_muris_sc/vignette_data/tm_sample.RData"),
+     verbose = TRUE)
+
+### SIDEREF
+### Note: source(here("R/libraries.R")) loads the function but we may also load it using:
+source(here("R/SIDEREF.R"))
+
+sideref_res <- SIDEREF(data_subset_variable)
+
+
+```
+
+
+### SIDEREF Options
+
+Note that the only required argument of SIDEREF is the expression matrix. 
+You may consider changing some of the default arguments:
+
+* n_top_genes (300): Number of genes comprising each DE gene list.
+* R (100): Size of cell reference set.
+* return_sim (FALSE): If true, returns the similarity matrix.
+* parallelize (TRUE): Whether to parallelize computations.
+* n_cores (detectCores()-2): How many cores to use in the parallel computation.
+* verbose (TRUE): Whether to print status messages during SIDEREF computation.
+
+For other parameters, we generally recommend leaving in their default setting, 
+or it should not make a very meaningfully difference in the generated results.
+
+
+
+## Computing relative distances
+
+Now that we have generated the SIDEREF distance matrix for the data, we 
+want to generate the crux of the exploratory analysis: 
+the relative distances heatmap. Here we compare the broadly defined 
+leukocytes to B cells and macrophages to see if there are some 
+important compositional differences. 
+
+```{r grpwise-heatmap, fig.width=7.75, fig.height=5}
+source(here('R/relative_group_dist_comps.R'))
+
+## Note: meta_data has a 'group_label' column containing cell type and tissue
+## Note: meta_data column should have cells in the same order as the dist matrix.
+
+### We may have an ordering that we prefer for the heatmap
+group_labels <- as.character(meta_data_subset$group_label)
+
+preset_levels <- 
+  c(
+    unique(group_labels[grepl("Bladder Cell", group_labels)]),
+    unique(group_labels[grepl("Leukocyte", group_labels)]),
+    unique(group_labels[grepl("B Cell", group_labels)]),
+    unique(group_labels[grepl("Natural Killer", group_labels)])
+    
+    )
+
+groupwiseDistanceHeatmap(
+  group_labels = group_labels, 
+  dist_mat = sideref_res, 
+  title = "Select Immune System Cell Types\nSIDEREF Relative Distances Heatmap",
+  do_hclust_axes = FALSE,
+  preset_levels = preset_levels,
+  do_numeric_x=TRUE,
+  do_numeric_y=FALSE
+  )
+
+
+
+```
+
+Rows designate *Source to Target* distance. These rows always include at least one 
+value of 1 and one value of 0, and denote the relative closeness of each cell 
+type to the source group. In contrast, the *Target to Source* columns may not include 
+0 or 1, and denote the relative closeness of the target group to each source group. 
+For example, the bladder cells are always the most distal target group, so its 
+target column values are all 1. However, of course it has some cell types that 
+lie closer to it than others, so its row values are more variable. For example, 
+its smallest source to target distance are clearly the bladder leukocytes. 
+In this sense the row and column for the bladder cell type provide complementary 
+information about its global relations.
+
+In the SIDEREF manuscript, we conduct gene set enrichment analysis (GSEA) to 
+validate that Thymus and Kidney leukocytes are enriched for B cell DE genes. 
+With Natural Killer (NK) cells included, we interestingly see that Kidney leukocytes 
+are proximal to the NK cell groups as well as the B cell groups. As leukocytes 
+can consist of any of its composite narrow immune cell types, 
+it is possible that some cells in this group are NK cells and some B cells.  Both 
+of these cell types derive from lymphoid progenitors. We might consider 
+partitioning the kidney leukocytes into subgroups based such that relative 
+distances are minimal to B cells for one subgroup and to NK cells for the other 
+subgroup.  Such analysis was out of the scope of the manuscript but is an 
+interesting direction to consider for automated cell type annotation.
+
+
+
+Note that we specify an ordering of the cell types using argument 
+``preset_levels``.  If you would like hierarchical clustering applied to the 
+heatmap in order to label cell types in an automated fashion, you may set  
+``do_hclust_axes = TRUE``:
+
+```{r hclust-axes, fig.width=7.75, fig.height=5}
+groupwiseDistanceHeatmap(
+  group_labels = group_labels, 
+  dist_mat = sideref_res, 
+  title = "Select Immune System Cell Types\nSIDEREF Relative Distances Heatmap",
+  do_hclust_axes = TRUE,
+  preset_levels = NULL,
+  do_numeric_x=TRUE,
+  do_numeric_y=FALSE
+  )
+```
+
+
+If you are interested, you may also inspect a bipartite network graph of 
+specific source-target distances. For example, if we want to focus on the 
+relationship of the bladder leukocytes to the other cell types, we can 
+run the following function call:
+
+
+```{r bip-graph, eval=TRUE, echo=TRUE, fig.width=10, fig.height=5}
+source(here("R/bipartite_graphs.R"))
+
+bipartiteNetworkGraph(
+        dist_mat = sideref_res,
+        group_labels = group_labels,
+        preset_levels = preset_levels,
+        source_groups = "Leukocyte, Kidney",
+        title = "Bladder Tissue Leukocytes, Source-Target Distances",
+        two_color_grad = TRUE,
+        ## text-sizing options:
+        node_size = 7.5,
+        text_size = 3,
+        s_t_size = 4,
+        leg_text_size = 8,
+        legend_title = "Cell Type, Tissue") + 
+  theme(legend.key.size = unit(0.5, 'cm'))
+    
+
+```
+
+Argument ``two_color_grad`` will maintain the red-white-blue gradient if ``FALSE`` and 
+impose a white-blue gradient if ``TRUE``:
+
+```{r red-white-blue-grad, eval=TRUE, echo=TRUE, fig.width=10, fig.height=5}
+bipartiteNetworkGraph(
+        dist_mat = sideref_res,
+        group_labels = group_labels,
+        preset_levels = preset_levels,
+        source_groups = "Leukocyte, Kidney",
+        title = "Bladder Tissue Leukocytes, Source-Target Distances",
+        two_color_grad = FALSE,
+        ## text-sizing options:
+        node_size = 7.5,
+        text_size = 3,
+        s_t_size = 4,
+        leg_text_size = 8,
+        legend_title = "Cell Type, Tissue") + 
+  theme(legend.key.size = unit(0.6, 'cm'))
+```
+
+
+
+
+
+

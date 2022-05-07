@@ -52,7 +52,7 @@ library(NetworkToolbox)
 ## RAFSIL dependencies:
 library(pracma)
 library(ClusterR)
-library(randomForest)
+#library(randomForest)
 library(fpc)
 
 ## Load scRNA seq dissimilarity alternatives

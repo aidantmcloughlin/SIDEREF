@@ -1,6 +1,4 @@
 
-
-
 ## average distances of distance matrix between cluster groups.
 computeGroupDists <- function(ref_group, group_labels, dist_mat,
                               normalize = TRUE) {

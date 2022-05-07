@@ -15,7 +15,7 @@ SIDEREF <- function(expr_matrix,
                     kmeans_elbow_chg_thres = 0.025,
                     ## parallelization parameters
                     parallelize = TRUE,
-                    n_cores = detectCores()-1,
+                    n_cores = detectCores()-2,
                     ## other
                     verbose = TRUE) {
   #' Computes SIDEREF distance matrix between cells in scRNA seq array.  

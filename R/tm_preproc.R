@@ -21,7 +21,8 @@ tm_preproc <-
                      return_seurat = FALSE)
 
 
-save(tm_preproc, 
+save(tm_preproc,
+     meta_data_full,
      file = here("output/tab_muris_sc/tab_muris_full_scale_var_genes_" %p% 
                    VAR_FEATURES %p% 
                    ifelse(USE_DROPLET_ONLY, 
