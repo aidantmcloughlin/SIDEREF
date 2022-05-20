@@ -15,7 +15,7 @@ tmLoadCut <- function(file_name,
   set.seed(seed)
   
   ### load Tabula Muris data
-  load(here('output/tab_muris_sc/preproc_data/' %p% file_name %p% '.RData'),
+  load(here('output/tab_muris_sc/' %p% file_name %p% '.RData'),
        verbose = TRUE)
   
   ### prep input files 

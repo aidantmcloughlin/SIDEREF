@@ -81,7 +81,9 @@ for(x in data_store_list[1:length(data_store_list)]) {
       save(meta_data_full,
            file = here("output/tab_muris_sc/dist_res/meta_data" %p%
                          "_samp_ct" %p% SAMPLE_CELL_TYPES %p% 
-                         "_samp_size" %p% TM_SAMP_SIZE %p% ".RData")) 
+                         "_samp_size" %p% TM_SAMP_SIZE %p% 
+                         "_use_droplet_only" %p% USE_DROPLET_ONLY %p% 
+                         ".RData")) 
 
     }
     

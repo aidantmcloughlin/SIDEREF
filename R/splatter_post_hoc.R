@@ -324,7 +324,7 @@ splat_figss4 <-
 
 ### save =========================================
 
-ggsave(here("manuscript_files//Figure1.png"),
+ggsave(here("manuscript_files//Figure1.eps"),
        plot = splat_fig1 +
          theme(
            panel.background = element_rect(color = "white"), # bg of the panel
@@ -335,9 +335,9 @@ ggsave(here("manuscript_files//Figure1.png"),
            legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
          ),
        width = 14, height = 15,
-       device='png', dpi=DPI)
+       device='eps', dpi=DPI)
 
-ggsave(here("manuscript_files/Figure2.png"),
+ggsave(here("manuscript_files/Figure2.eps"),
        plot = splat_fig2 +
          theme(
            panel.background = element_rect(fill = "white"), # bg of the panel
@@ -347,10 +347,10 @@ ggsave(here("manuscript_files/Figure2.png"),
            legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
          ),
        width = 13, height = 9,
-       device='png', dpi=DPI)
+       device='eps', dpi=DPI)
 
 
-ggsave(here("manuscript_files/Figure3.png"),
+ggsave(here("manuscript_files/Figure3.eps"),
        plot = splat_fig3 +
          theme(
            panel.background = element_rect(fill = "white"), # bg of the panel
@@ -360,9 +360,9 @@ ggsave(here("manuscript_files/Figure3.png"),
            legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
          ),
        width = 19, height = 5.25,
-       device='png', dpi=DPI)
+       device='eps', dpi=DPI)
 
-ggsave(here("manuscript_files/FigureS4.png"),
+ggsave(here("manuscript_files/FigureS4.eps"),
        plot = splat_figss4 +
          theme(
            panel.background = element_rect(fill = "white"), # bg of the panel
@@ -372,7 +372,7 @@ ggsave(here("manuscript_files/FigureS4.png"),
            legend.box.background = element_rect(fill = "white") # get rid of legend panel bg
          ),
        width = 9, height = 3.25,
-       device='png', dpi=DPI)
+       device='eps', dpi=DPI)
 
 
 

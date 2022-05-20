@@ -11,7 +11,7 @@ set.seed(1)
 
 
 ## Load variable genes full data set to subset via metadata indices.
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"),
+load(here("output/tab_muris_sc/tab_muris_full.RData"),
      verbose=TRUE)
 
 ## Get metadata via helper function

@@ -8,7 +8,7 @@ source(here("R/tm_helper_functions.R"))
 
 ## Path variables
 tab_muris_rel_path = here("data/tab_muris_sc/seurat/")
-tab_muris_out_path = here("output/tab_muris_sc/preproc_data")
+tab_muris_out_path = here("output/tab_muris_sc")
 
 
 sampleBindTabMuris <- 

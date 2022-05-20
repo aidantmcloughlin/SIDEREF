@@ -97,13 +97,13 @@ TabMurisDistResPipeline <-
     
     ## Run distance computes
     dist_res <-
-      computeAllDists(counts = full_data_subset_variable, 
-                      group_labels = meta_data$cell_type[cell_inds], 
-                      r = R, g = G, 
+      computeAllDists(counts = full_data_subset_variable,
+                      group_labels = meta_data$cell_type[cell_inds],
+                      r = R, g = G,
                       pcs = PCs,
                       simlr_dims = spectral_dims,
                       elbow_pca = elbow_pca,
-                      n_pcs = n_pcs, n_clust = n_clust, 
+                      n_pcs = n_pcs, n_clust = n_clust,
                       pca_elbow_chg_thres = pca_elbow_chg_thres,
                       kmeans_elbow_chg_thres = kmeans_elbow_chg_thres,
                       rafsil_nrep = rafsil_nrep,
@@ -112,19 +112,22 @@ TabMurisDistResPipeline <-
                       n_neighbors = n_neighbors,
                       min_dist = min_dist)
     
+    
     ###  Appending Spectral Results 
     
     print("Spectral distance computation")
     ## We run on SIDEREF and PCA (weighted)
-    spectral_dist_res <- dist_res$output
+    set.seed(1)
+    
+    spectral_dist_res <- dist_res$main_dist_output
     
     spectral_dist_names <-
-      names(dist_res$output$dist_list)[
-        grepl("pca_wtd|side", names(dist_res$output$dist_list))]
+      names(dist_res$main_dist_output$dist_list)[
+        grepl("pca_wtd|side", names(dist_res$main_dist_output$dist_list))]
     
     spectral_umap_names <-
-      names(dist_res$output$umap_list)[
-        grepl("pca_wtd|side", names(dist_res$output$umap_list))]
+      names(dist_res$main_dist_output$umap_list)[
+        grepl("pca_wtd|side", names(dist_res$main_dist_output$umap_list))]
     
     spectral_dist_res$dist_list <- 
       spectral_dist_res$dist_list[spectral_dist_names]

@@ -260,7 +260,7 @@ selectRefSet <- function(expr_matrix,
     if(is.null(n_clust)) {
       wss <- rep(0, max_clust_try-1)
       for(k in seq(2, max_clust_try)) {
-        wss[k-1] <- kmeanspp(umap_embed, k = k)$tot.withinss
+        wss[k-1] <- sum(kmeans(umap_embed, centers = k)$withinss)
       }
       
       ## quick_elbow from WSS to decide number of clusters
@@ -272,7 +272,7 @@ selectRefSet <- function(expr_matrix,
     }
     
     ## now with clusters decided, run k-means again
-    clust_res <- kmeanspp(umap_embed, k = n_clust)$cluster
+    clust_res <- kmeans(umap_embed, centers = n_clust)$cluster
     
     
     ## sampling from cluster results

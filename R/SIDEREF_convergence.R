@@ -148,13 +148,13 @@ source(here("R/tm_helper_functions.R"))
 ### Load data.
 
 ## Get full metadata
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"),
+load(here("output/tab_muris_sc/tab_muris_full.RData"),
      verbose=TRUE)
 rm(data_full)
 
 
 ## Get preprocessed assay data
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full_scale_var_genes_" %p% 
+load(here("output/tab_muris_sc/tab_muris_full_scale_var_genes_" %p% 
             VAR_FEATURES %p% ifelse(USE_DROPLET_ONLY, "_droplet_only", "") %p% 
             ".RData"),
      verbose=TRUE)
@@ -185,69 +185,4 @@ heatmap_convergence_res_df_list <-
     n_neighbors = N_NEIGHBORS,
     n_cores = N_CORES,
     save_intermed_file = here("output/computations/sideref_converge_df_list.RData"))
-
-
-
-###############################################################################
-### Plot Results
-
-load(here("output/computations/sideref_converge_df_list.RData"),
-     verbose=TRUE)
-
-### average over runs
-AVG_RUNS <- TRUE
-
-if(AVG_RUNS) {
-  nonzero_reps <- sum(sapply(res_df_list, function(x) x$norm_diff[nrow(x)] > 0))
-  
-  avg_res_df <- Reduce("+", res_df_list[1:nonzero_reps]) / nonzero_reps  
-} else{
-  avg_res_df <- res_df_list[[1]]
-}
-
-last_entry <- max(which(avg_res_df$norm_diff > 0))
-avg_res_df <- avg_res_df[1:last_entry, ]
-
-### Plot Res
-p_converge <-
-  avg_res_df %>%
-  mutate(log_10_Fnorm = log(norm_diff, base=10) )%>% 
-  gather(cat, val, quantile_90:log_10_Fnorm) %>%
-  mutate(cat = case_when(
-    cat == "log_10_Fnorm" ~ "Log (Base 10) of Frobenius Norm",
-    cat == "max_diff" ~ "Maximum",
-    cat == "quantile_90" ~ "90th Quantile",
-    cat == "quantile_95" ~ "95th Quantile",
-    cat == "quantile_97.5" ~ "97.5th Quantile",
-    cat == "quantile_99" ~ "99th Quantile",
-    TRUE ~ cat)
-  ) %>%
-  mutate(cat = factor(
-    cat, 
-    levels = c("Log (Base 10) of Frobenius Norm",
-               "Maximum",
-               "90th Quantile",
-               "95th Quantile",
-               "97.5th Quantile",
-               "99th Quantile"))) %>%
-  ggplot(aes(x=n_prev, y=val, color=cat)) +
-  geom_line() + 
-  geom_point(size=0.5) +
-  scale_x_continuous(name = "Sample Size per Cell Type (n1, n2)", 
-                     breaks= unique(avg_res_df$n_prev),
-                     labels= '(' %p% unique(avg_res_df$n_prev) %p% ',' %p% 
-                       unique(avg_res_df$n) %p% ')',
-                     minor_breaks = NULL) + 
-  theme_bw() + 
-  labs(y="",color=expression(paste("Stat of: |", D[n2]-D[n1], "|"))) + 
-  theme(axis.title = element_text(size=13),
-        legend.title = element_text(size=13))
-
-
-ggsave(here("manuscript_files/FigureS5.eps"),
-       plot = p_converge,
-       width = 15, height = 6,
-       device='eps', dpi=DPI)
-
-
 

@@ -124,7 +124,7 @@ snn_SIDEREF_SIDEseq <-
         nn_consistency['avg_snn_run' %p% s][i,] <- 
           avg_embed
         nn_consistency['compute_time_run' %p% s][i,] <- 
-          difftime(end_time_start, start_time_start, units='secs')
+          difftime(end_time_strat, start_time_strat, units='secs')
         
         
         nn_consistency['avg_snn_run' %p% s][i+1,] <- 
@@ -171,100 +171,6 @@ snn_SIDEREF_SIDEseq <-
 
 
 
-SIDEREF_snn_plot <- 
-  function(nn_consistency_df,
-           snn_k = SNN_K) {
-    
-    ## get run time details from DF
-    n_reps <- max(as.numeric(
-      str_sub(names(nn_consistency_df), -1, -1)), na.rm=T)
-    
-    ref_set_sizes <- unique(nn_consistency_df$ref_set_size)
-    
-    nn_consistency_df_long <-
-      nn_consistency_df %>% 
-      dplyr::select(method, ref_set_size,
-                    avg_snn, 
-                    min_snn, max_snn) %>%
-      tidyr::gather(measure, snn_stat,
-                    avg_snn, 
-                    min_snn, max_snn) %>% 
-      mutate(method = 
-               factor(case_when(measure == "avg_snn" ~ 
-                                  method %p% " (Avg)",
-                                measure == "min_snn" ~ 
-                                  method %p% " (Min)",
-                                measure == "max_snn" ~ 
-                                  method %p% " (Max)")))
-    
-    nn_consistency_df_long$method <-
-      forcats::fct_relevel(
-        nn_consistency_df_long$method,
-        c("Cell Type Stratified Sample (Max)", 
-          "Cell Type Stratified Sample (Avg)", 
-          "Cell Type Stratified Sample (Min)", 
-          "Random Sample (Max)", "Random Sample (Avg)", "Random Sample (Min)"))
-    
-    p <-
-      nn_consistency_df_long %>%
-      ggplot(aes(x = ref_set_size, fill = method, y = snn_stat)) + 
-      geom_bar(stat = "identity", position = "dodge", col = "black", 
-               width=16) + #, alpha = 0.75) + 
-      coord_cartesian(ylim = c(floor(min(nn_consistency_df_long$snn_stat)), 
-                               snn_k)) +
-      theme_bw() + 
-      scale_x_continuous(name = "Reference Set Size", 
-                         breaks = ref_set_sizes,
-                         minor_breaks = NULL) +
-      scale_fill_manual(values = c("dark blue", "blue", "light blue",
-                                   "dark red", "red", "coral",
-                                   "forest green", "green", "light green")) +
-      labs(x = "Reference Set Size",
-           y = "Mean Shared Nearest Neighbors (of " %p% snn_k %p% ")",
-           fill = "Method (Statistic over " %p% n_reps %p% " Runs)")
-    
-    return(p)
-    
-  }
-
-
-SIDEREF_sampling_type_compute_time_plot <- 
-  function(nn_consistency_df) {
-    
-    ## get run time details from DF
-    n_reps <- max(as.numeric(
-      str_sub(names(nn_consistency_df), -1, -1)), na.rm=T)
-    
-    ref_set_sizes <- unique(nn_consistency_df$ref_set_size)
-    
-    compute_time_df_long <- 
-      nn_consistency_df %>% 
-      dplyr::select(method, ref_set_size,
-                    avg_compute_time) %>%
-      mutate(method = method %p% " (Avg)")
-    
-    p <- 
-      ggplot() + 
-      geom_bar(data = compute_time_df_long,
-               aes(x = ref_set_size, 
-                   y = avg_compute_time, 
-                   fill = method),
-               stat = "identity", position = "dodge", col = "black", 
-               width=16, alpha = 0.75) + 
-      theme_bw() + 
-      scale_x_continuous(name = "Reference Set Size", 
-                         breaks= ref_set_sizes,
-                         minor_breaks = NULL) + 
-      labs(x = "Reference Set Size",
-           y = "Compute Time (Minutes)",
-           fill = "Method (Statistic over " %p% n_reps %p% " Runs)") + 
-      scale_fill_manual(values = c("blue", "red"))
-    
-    return(p)
-    
-  }
-
-
 
 ###############################################################################
 ### MAIN: DATA LOAD AND RUN.
@@ -276,13 +182,13 @@ source(here("R/tm_helper_functions.R"))
 
 
 ## Get full metadata
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"),
+load(here("output/tab_muris_sc/tab_muris_full.RData"),
      verbose=TRUE)
 rm(data_full)
 
 
 ## Get preprocessed assay data
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full_scale_var_genes_" %p% 
+load(here("output/tab_muris_sc/tab_muris_full_scale_var_genes_" %p% 
             VAR_FEATURES %p% ifelse(USE_DROPLET_ONLY, "_droplet_only", "") %p% 
             ".RData"),
      verbose=TRUE)
@@ -308,18 +214,3 @@ snn_SIDEREF_SIDEseq(
                               "snn_SIDEREF_SIDEseq.RData"))
 
 
-### load, plot
-
-load(here("output/computations/" %p%
-            "snn_SIDEREF_SIDEseq.RData"),
-     verbose = TRUE)
-
-SIDEREF_snn_plot(nn_consistency,
-                 snn_k = SNN_K) + 
-  theme(axis.title = element_text(size=13),
-        legend.title = element_text(size=13))
-
-ggsave(here("manuscript_files/FigureS1.eps"),
-       plot = last_plot(),
-       width = 12, height = 7,
-       device='eps', dpi=DPI)

@@ -3,11 +3,11 @@ getTMCellTypeSampleDistFileName <- function(file_tag,
                                          samp_size = TM_SAMP_SIZE,
                                          use_droplet_only = USE_DROPLET_ONLY) {
   if(file_tag != "meta_data") {
-    return(file_loc %p% "samp_ctTRUE_samp_pctFALSE_samp_size" %p% samp_size %p%
+    return(file_loc %p% "samp_ctTRUE_samp_size" %p% samp_size %p%
              "_use_droplet_only" %p% USE_DROPLET_ONLY %p% "_" %p%
              file_tag %p% ".RData")
   } else{
-    return(file_loc %p% "meta_data_samp_ctTRUE_samp_pctFALSE_samp_size" %p% 
+    return(file_loc %p% "meta_data_samp_ctTRUE_samp_size" %p% 
              samp_size %p% "_use_droplet_only" %p% USE_DROPLET_ONLY %p% ".RData")
   }
 }

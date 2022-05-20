@@ -279,10 +279,12 @@ res_list_only_globals <-
                         global_group_map_multi = group_global_group_map_only_globals_multi,
                         dist_list = dist_list_to_measure)
 
+
 res_list_all <- 
   computeGrpwiseStatsTM(meta_data = meta_data_full,
                         global_group_map_multi = group_global_group_map_all_multi,
                         dist_list = dist_list_to_measure)
 
-
+lapply(res_list_only_globals, function(x)x * 100)
+lapply(res_list_all, function(x)x * 100)
 

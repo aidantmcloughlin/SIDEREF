@@ -47,7 +47,7 @@ TM data, subsampling 100 cells per cell type is sufficient to recover stable
 cell type relative distances.
 
 ```{r Extract-Assay-Meta, eval=FALSE, echo=TRUE}
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"),
+load(here("output/tab_muris_sc/tab_muris_full.RData"),
      verbose=TRUE)
 
 ### Set constants
@@ -113,7 +113,7 @@ save(data_subset_variable, meta_data_subset,
      file = here("output/tab_muris_sc/vignette_data/tm_sample.RData"))
 
 ## RM large tm objects and conserve space
-rm(list = c("data_full", "meta_data_full", "data_subset_seurat", "tm_data_list"))
+rm(list = c("data_full", "meta_data_full", "data_subset_seurat"))
 ```
 
 

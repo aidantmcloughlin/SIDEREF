@@ -13,9 +13,10 @@ DIST_REL_PATH <- "dist_res/"
 SIM_NAME <- "splatter_sim"
 
 
-runSplatterDistCompute <- function(sim_name,
-                                   f_path = F_PATH,
-                                   d_rel_path = DIST_REL_PATH) {
+runSplatterDistCompute <- 
+  function(sim_name,
+           f_path = F_PATH,
+           d_rel_path = DIST_REL_PATH) {
   ## load splatter simulation
   load(here(f_path %p% sim_name %p% ".RData"),
        verbose=TRUE)

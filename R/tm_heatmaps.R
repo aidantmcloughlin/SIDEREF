@@ -360,8 +360,6 @@ tm_group_hm_list_spectral <-
                     cell_type_levels_list = cell_type_levels_list)
 
 
-
-
 arranged_p_1 <-
   ggarrange(
     tm_group_hm_list_main$cells_b_leuko$plot_list_hm_asym$side_ref_g300_dist + 
@@ -410,9 +408,9 @@ ggsave(here("manuscript_files/Figure4.eps"),
        device='eps', dpi=DPI)
 
 
-ggsave(here("manuscript_files/FigureS6.png"),
+ggsave(here("manuscript_files/FigureS6.eps"),
        plot = arranged_p_2,
        width = 8, height = 9.75,
-       device='png', dpi=DPI)
+       device='eps', dpi=DPI)
 
 

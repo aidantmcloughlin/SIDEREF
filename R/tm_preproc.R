@@ -6,7 +6,7 @@ source(here("R/tm_helper_functions.R"))
 ### Preproc Functions
 source(here("R/distance_compute_helpers.R"))
 
-load(here("output/tab_muris_sc/preproc_data/tab_muris_full.RData"))
+load(here("output/tab_muris_sc/tab_muris_full.RData"))
 
 if(USE_DROPLET_ONLY) {
   droplet_cells <- which(grepl("droplet", meta_data_full$file_source))
