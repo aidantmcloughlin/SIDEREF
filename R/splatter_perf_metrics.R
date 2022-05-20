@@ -22,7 +22,7 @@ for(s in seq_len(N_SPLATTER_SIMS_METRICS)) {
   
   
   ## Load results
-  for(f in splat_out_files) {
+  for(f in setdiff(splat_out_files, "README.md")) {
     load(splat_out_path %p% f,
          verbose = TRUE)  
   }

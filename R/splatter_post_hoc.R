@@ -15,7 +15,7 @@ splat_out_files <-
 
 
 ## Load results
-for(f in splat_out_files) {
+for(f in setdiff(splat_out_files, "README.md")) {
   load(splat_out_path %p% f,
        verbose = TRUE)  
 }
@@ -267,7 +267,7 @@ SIMLR_PLOT_SIZE_SCALE=0.7
 p12<- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
   dist_mat = othr_dist_output$dist_list$SIMLR_10_dims,
-  title = "(d) SIMLR (10 Connected Components)",
+  title = "(a) SIMLR (10 Connected Components)",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
@@ -284,7 +284,7 @@ p12<- groupwiseDistanceHeatmap(
 p13<- groupwiseDistanceHeatmap(
   group_labels = group_labels, 
   dist_mat = othr_dist_output$dist_list$SIMLR_25_dims,
-  title = "(e) SIMLR (25 Connected Components)",
+  title = "(b) SIMLR (25 Connected Components)",
   symmetrize = SYMMETRIZE,
   do_hclust_axes = FALSE,
   preset_levels = as.character(1:20),
