@@ -9,7 +9,7 @@ The placeholder directory/ies for each downloaded output folder is ``output``.
 
 
 
-You may reproduce output figures and tables that use these data by running:
+You may reproduce manuscript figures and tables that use these outputs by running:
   ``library(here)``
   
   ``source(here("R/post_hoc_analysis.R"))``
